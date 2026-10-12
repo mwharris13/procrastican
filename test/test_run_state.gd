@@ -9,8 +9,9 @@ func before_each():
 
 func test_zone_lookup():
 	assert_eq(RunState.zone_index_at(d.zones, 0.0), 0)
-	assert_eq(RunState.zone_index_at(d.zones, 399.9), 0)
-	assert_eq(RunState.zone_index_at(d.zones, 400.0), 1)
+	var downtown: float = d.zones[1].start_m
+	assert_eq(RunState.zone_index_at(d.zones, downtown - 0.1), 0)
+	assert_eq(RunState.zone_index_at(d.zones, downtown), 1)
 	assert_eq(RunState.zone_index_at(d.zones, 5000.0), 2)
 
 func test_combo_rules():

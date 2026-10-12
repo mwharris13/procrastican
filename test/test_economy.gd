@@ -52,7 +52,7 @@ func test_profile_effects_include_upgrades_and_can():
 	save.owned_cans = ["soda", "lucky"]
 	save.equipped_can = "lucky"
 	var stats := StatResolver.resolve(d.tuning, Economy.profile_effects(save, d))
-	assert_eq(stats.launch_speed_max, d.tuning.launch_speed_max + 2.0)
+	assert_eq(stats.launch_speed_max, d.tuning.launch_speed_max + 2.0 * float(d.upgrades.filter(func(u): return u.id == "kick_power")[0].effects[0].value))
 	assert_almost_eq(stats.coin_mult, 1.5, 1e-9)
 
 func test_coin_formula():
