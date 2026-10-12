@@ -15,7 +15,6 @@ var _late_open := false
 var _since_touchdown := 0.0
 var _stall_x := 0.0
 var _stall_t := 0.0
-var _used := {}
 
 
 func _init(p_stats: Dictionary) -> void:
@@ -61,7 +60,11 @@ func advance(dt: float) -> Array:
 	while remaining > 0.0 and not ended:
 		var prev := can.pos
 		var chunk: Array = []
-		var used := can.step(remaining, chunk)
+		var step_dt := remaining
+		if _late_open:
+			# Cap so the late-window MISS fires before any next touchdown.
+			step_dt = minf(remaining, maxf(stats.good_window - _since_touchdown, 0.0) + 1e-4)
+		var used := can.step(step_dt, chunk)
 		remaining -= used
 		if _late_open:
 			_since_touchdown += used

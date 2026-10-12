@@ -116,6 +116,7 @@ func test_rest_waits_for_open_late_window():
 	s.can.launch(5.0, 0.05)
 	var ev := _until_type(s, "run_end")
 	var types := ev.map(func(e): return e.type)
+	assert_gte(types.find("graded"), 0)
 	assert_true(types.find("graded") < types.find("run_end"))
 
 func test_air_kick_spends_charge_when_far_from_ground():
@@ -141,3 +142,14 @@ func test_watchdog_ends_endless_roll():
 	var s := _sim()
 	var ev := _until_type(s, "run_end")
 	assert_eq(ev[-1].reason, "watchdog")
+
+func test_long_advance_emits_miss_before_next_touchdown():
+	var s := _sim()
+	_until_type(s, "touchdown")
+	var ev := s.advance(1.0)
+	var types := ev.map(func(e): return e.type)
+	var td := types.find("touchdown")
+	assert_gte(td, 1, "a second touchdown occurs in the long advance")
+	assert_eq(types[0], "graded")
+	assert_eq(ev[0].grade, TapJudge.Grade.MISS)
+	assert_eq(_graded(ev.slice(0, td)).size(), 1)
