@@ -1,0 +1,34 @@
+{
+	"shared": {
+		"ink": "3b2d4a", "ink_deep": "2b2140", "paper": "fff4e6", "paper2": "f6dcc6", "accent": "e5676a", "accent_dark": "8a3b4a",
+		"gold": "ffd166", "coin_rim": "b88a2a", "white": "ffffff", "teal": "5aa9a0", "teal_shade": "468a83", "pants": "3d3a5c",
+		"skin": "efbf94", "hair": "2e2230", "shoe": "f4ece6", "can_red": "e63946", "can_light": "ff7a83", "can_dark": "b52a36",
+		"rim_light": "e6e6e6", "rim_dark": "bdbdbd", "lucky_gold": "e0b13f", "lucky_light": "fff1b8", "clover": "3f9a5c",
+		"clover_dark": "2f7a47", "paint_gray": "9aa7b8", "paint_light": "c8d0dc", "paint_dark": "7a8798", "metal": "7b8a8f",
+		"metal_light": "93a3a8", "metal_dark": "5f6d72", "dog": "c98a4b", "dog_dark": "7a4f2a", "glass": "9fd0e0", "hub": "9a9aa8",
+		"pigeon": "8d8fa8", "pigeon_neck": "6fb0a0", "beak": "e0a33f", "feet": "e07a5f", "screen_glow": "bfe6ff", "lilac": "b39ccf",
+		"lilac_dark": "6a5687", "rare_paper": "f1e6ff"
+	},
+	"golden": {
+		"sky_0": "6c6fb4", "sky_1": "c995c0", "sky_2": "f2a8a6", "sky_3": "ffd6a0", "sun": "ffe9b0", "cloud": "f7c6c0",
+		"hill_far": "c98fa8", "hill_near": "a7799b", "house_a": "e8a47a", "house_b": "8fb3c0", "house_c": "e2c06a",
+		"house_a_shade": "c9825e", "house_b_shade": "7193a3", "house_c_shade": "c3a04f", "house_d_shade": "957fb4",
+		"roof_a": "b9566a", "roof_b": "4b5a8a", "roof_c": "c87444", "window": "ffe08a", "door": "5b4352", "bush": "7f8f6a",
+		"grass": "6f8b55", "rim": "ffe3c0", "sidewalk": "d8b9a8", "curb": "b89a8f", "road": "4b4560", "lane": "e8d6d0",
+		"shadow": "3b2d4a", "puddle": "9fa6c9", "puddle_shine": "f2c4c7", "post": "6b5a4e"
+	},
+	"dusk": {
+		"sky_0": "2f3a6b", "sky_1": "6b5a9a", "sky_2": "c77fa4", "sky_3": "f0a58c", "low_sun": "ffc18a", "skyline": "4a4377",
+		"window_lit": "ffd98a", "window_dark": "3d3560", "brick": "a35b4f", "brick_shade": "8a4a40", "stucco": "d7c1a3",
+		"stucco_shade": "bfa88a", "blue": "6f7fa6", "blue_shade": "5a6a91", "tan": "b98a6a", "tan_shade": "9e7253",
+		"awning_teal": "2f6f6a", "awning_red": "c74b5b", "awning_gold": "e0a33f", "sign": "2e2440", "neon": "ff8fb1",
+		"shop_glow": "ffcf7a", "sidewalk": "c4a9a6", "curb": "a58e8c", "road": "3c3652", "lane": "f4d35e", "lamp": "fff1b8",
+		"drain": "2a2440", "drain_slot": "5c5478"
+	},
+	"night": {
+		"sky_0": "0f1433", "sky_1": "1d2552", "sky_2": "3a3a6e", "sky_3": "6b4a6e", "moon": "f3ecd2", "city_glow": "b5658a",
+		"far": "2b2652", "far_hill": "232046", "shoulder": "5a5070", "road": "26243a", "edge": "ffffff", "lane": "f4d35e",
+		"sodium": "ffa64d", "sodium_light": "ffd08a", "pole": "3a3555", "rail": "9aa0b8", "rail_light": "c8cde0",
+		"rail_post": "6c7088", "truck": "d7d3e0", "truck_light": "ecebf2", "cab": "c74b5b", "tire": "1a1828", "gravel": "8a84a0"
+	}
+}
