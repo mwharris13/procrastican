@@ -3,6 +3,10 @@ extends RefCounted
 ## Deterministic can flight: meters and seconds, y up, ground at y = 0, pos is the can's bottom.
 
 const SUBSTEP := 1.0 / 240.0
+# perfect_vx_boost is a speed retention, clamped so every kick bleeds energy.
+const MAX_PERFECT_KEEP := 0.99
+# The bounce floor shrinks with speed so a bled-out can can settle into a roll.
+const REKICK_VY_PER_VX := 0.35
 
 var stats: Dictionary
 var pos := Vector2.ZERO
@@ -78,11 +82,14 @@ func _dead_bounce() -> void:
 
 func rekick(perfect: bool) -> void:
 	var rest: float = stats.restitution_perfect if perfect else stats.restitution_good
-	var keep: float = stats.perfect_vx_boost if perfect else stats.good_vx_keep
+	var keep: float = minf(stats.perfect_vx_boost, MAX_PERFECT_KEEP) if perfect else stats.good_vx_keep
 	vel.x = minf(last_impact_vel.x * keep, stats.max_speed)
-	vel.y = maxf(-last_impact_vel.y * rest, stats.rekick_vy_min)
+	vel.y = maxf(-last_impact_vel.y * rest, minf(stats.rekick_vy_min, REKICK_VY_PER_VX * vel.x))
 	pos.y = maxf(pos.y, 0.0)
 	rolling = false
+	if vel.y < stats.roll_vy:
+		vel.y = 0.0
+		rolling = true
 	at_rest = false
 
 

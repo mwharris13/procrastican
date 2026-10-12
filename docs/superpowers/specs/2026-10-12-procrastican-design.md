@@ -39,8 +39,8 @@ more rewarding as skills and gear accumulate across runs.
 
 | Grade | Window (start values, tunable) | Effect |
 |---|---|---|
-| Perfect | ±60 ms | Re-kick forward with speed boost (scaled by Sneakers), combo +1, big juice |
-| Good | ±130 ms | Re-kick with reduced retention, combo kept |
+| Perfect | ±60 ms | Re-kick forward keeping most of its speed (more with Sneakers), combo +1, big juice |
+| Good | ±130 ms | Re-kick keeping less speed, combo kept |
 | Miss / no tap | — | Dead bounce: large energy loss, combo resets |
 
 - At most one graded tap per touchdown. A tap outside the Good window is ignored (unless it triggers an Air Kick);

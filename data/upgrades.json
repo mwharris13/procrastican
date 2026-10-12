@@ -1,7 +1,7 @@
 [
 	{"id": "kick_power", "track": "gear", "name": "Kick Power", "desc": "Harder launch kick", "base_cost": 10, "cost_growth": 1.55, "max_level": 40,
 	 "effects": [{"stat": "launch_speed_max", "op": "add", "value": 1.0}, {"stat": "max_speed", "op": "add", "value": 1.5}]},
-	{"id": "sneakers", "track": "gear", "name": "Sneakers", "desc": "Bigger Perfect boost", "base_cost": 25, "cost_growth": 1.65, "max_level": 30,
+	{"id": "sneakers", "track": "gear", "name": "Sneakers", "desc": "Perfect kicks keep more speed", "base_cost": 25, "cost_growth": 1.65, "max_level": 30,
 	 "effects": [{"stat": "perfect_vx_boost", "op": "add", "value": 0.004}]},
 	{"id": "timing", "track": "skills", "name": "Timing", "desc": "Wider Perfect and Good windows", "base_cost": 30, "cost_growth": 1.7, "max_level": 20,
 	 "effects": [{"stat": "perfect_window", "op": "mul", "value": 1.05}, {"stat": "good_window", "op": "mul", "value": 1.04}]},

@@ -49,8 +49,33 @@ func test_perfect_rekick_beats_good_beats_dead():
 	var perfect_vx := c.vel.x
 	assert_gt(good_vx, dead_vx)
 	assert_gt(perfect_vx, good_vx)
-	assert_gt(perfect_vx, c.last_impact_vel.x)
+	assert_gt(c.last_impact_vel.x, perfect_vx)
 	assert_gte(c.vel.y, stats.rekick_vy_min)
+
+func _rest_time_with_rekicks(perfect: bool) -> float:
+	var c := CanPhysics.new(stats)
+	c.launch(45.0, 1.0)
+	while c.time < 120.0 and not c.at_rest:
+		var ev: Array = []
+		c.step(1.0 / 60.0, ev)
+		for e in ev:
+			if e.type == "touchdown":
+				c.rekick(perfect)
+	return c.time if c.at_rest else INF
+
+func test_perfect_chain_comes_to_rest():
+	assert_lt(_rest_time_with_rekicks(true), 120.0)
+
+func test_good_chain_comes_to_rest():
+	assert_lt(_rest_time_with_rekicks(false), 120.0)
+
+func test_perfect_retention_is_clamped():
+	stats.perfect_vx_boost = 1.5
+	var c := CanPhysics.new(stats)
+	c.launch(45.0, 1.0)
+	_fly_to_touchdown(c)
+	c.rekick(true)
+	assert_lte(c.vel.x, c.last_impact_vel.x * 0.99 + 0.0001)
 
 func test_speed_is_capped():
 	var c := CanPhysics.new(stats)
