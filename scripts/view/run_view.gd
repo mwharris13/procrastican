@@ -18,6 +18,7 @@ var juice: Juice
 var sfx: Sfx
 var probe: LatencyProbe
 var state := "idle"
+var input_enabled := true
 var cam_x := 0.0
 var ground_y := 410.0
 var ppm := 14.0
@@ -79,6 +80,8 @@ func screen_to_world(s: Vector2) -> Vector2:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if not input_enabled:
+		return
 	if event is InputEventScreenTouch:
 		if probe:
 			probe.mark_input(Time.get_ticks_usec())

@@ -35,6 +35,7 @@ func _ready() -> void:
 	overlay = TuningOverlay.new()
 	overlay.setup(stats, probe)
 	add_child(overlay)
+	overlay.visibility_toggled.connect(_on_overlay_toggled)
 	_new_run()
 
 
@@ -56,6 +57,12 @@ func _on_sim_event(ev: Dictionary) -> void:
 			elif ev.grade == TapJudge.Grade.MISS:
 				combo = 0
 			hud.set_combo(combo)
+
+
+func _on_overlay_toggled(open: bool) -> void:
+	if open:
+		run_view.cancel_drag()
+	run_view.input_enabled = not open
 
 
 func _on_run_ended(ev: Dictionary) -> void:

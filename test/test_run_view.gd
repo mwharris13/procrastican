@@ -84,3 +84,22 @@ func test_canceled_touch_does_not_launch():
 	view._unhandled_input(cancel)
 	assert_eq(view.state, "aiming")
 	assert_false(view.sim.can.launched)
+
+func test_input_disabled_ignores_touches():
+	view.input_enabled = false
+	var down := InputEventScreenTouch.new()
+	down.index = 0
+	down.pressed = true
+	down.position = Vector2(100, 300)
+	view._unhandled_input(down)
+	var drag := InputEventScreenDrag.new()
+	drag.index = 0
+	drag.position = Vector2(40, 360)
+	view._unhandled_input(drag)
+	var up := InputEventScreenTouch.new()
+	up.index = 0
+	up.pressed = false
+	up.position = Vector2(40, 360)
+	view._unhandled_input(up)
+	assert_eq(view.state, "aiming")
+	assert_false(view.sim.can.launched)

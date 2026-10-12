@@ -8,6 +8,8 @@ const KEYS: Array[String] = [
 	"ground_friction", "perfect_window", "good_window", "tap_reach_m", "px_per_m",
 ]
 
+signal visibility_toggled(open: bool)
+
 var stats: Dictionary
 var probe: LatencyProbe
 var _readout: Label
@@ -82,10 +84,13 @@ func _add_row(rows: VBoxContainer, key: String) -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
-		if event.pressed:
+		if event.canceled:
+			_touches.clear()
+		elif event.pressed:
 			_touches[event.index] = true
 			if _touches.size() >= 3:
 				toggle()
+				get_viewport().set_input_as_handled()
 		else:
 			_touches.erase(event.index)
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_F1:
@@ -101,7 +106,10 @@ func toggle() -> void:
 	visible = not visible
 	_touches.clear()
 	if visible:
+		if _readout:
+			_readout.text = readout_text()
 		_refresh_export()
+	visibility_toggled.emit(visible)
 
 
 func set_value(key: String, v: float) -> void:
