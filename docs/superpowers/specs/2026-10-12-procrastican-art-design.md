@@ -1,6 +1,6 @@
 # Procrastican — Art Pass Design
 
-**Date:** 2026-10-12 · **Builds on:** `2026-10-12-procrastican-design.md` (v1) · **Status:** draft for review
+**Date:** 2026-10-12 · **Builds on:** `2026-10-12-procrastican-design.md` (v1) · **Status:** approved 2026-10-12
 
 ## 1. Intent
 
@@ -135,7 +135,7 @@ Popups use the theme font at 16 px with a 4 px ink outline (PERFECT! gold, GOOD 
 ## 6. UI
 
 **Font:** `assets/fonts/PressStart2P-Regular.ttf` + `assets/fonts/OFL.txt` (from `github.com/google/fonts`, `ofl/pressstart2p`;
-download requires the user's OK). `FontFile` with antialiasing off, hinting none, subpixel positioning off. Sizes: 8 (body), 16 (headings, popups, logo uses 16 scaled ×2 via `Label.scale` integer).
+download approved by the user). `FontFile` with antialiasing off, hinting none, subpixel positioning off. Sizes: 8 (body), 16 (headings, popups, logo uses 16 scaled ×2 via `Label.scale` integer).
 
 **Theme:** `UiTheme.build() -> Theme` creates the default font/size, `StyleBoxTexture` 9-slices from the `ui` sheet for
 `PanelContainer`, `Button` (normal/hover = normal, pressed, disabled, focus = empty) and tab buttons, and label outline settings.
@@ -176,7 +176,7 @@ GUT (engine ERROR lines count as failures, so tests that expect errors use the e
 - **User gate:** deploy + iPhone play check: looks right, still 60 fps, nothing broken.
 
 ## 10. Sequencing
-0. Finish v1 (final whole-branch review + fix wave), merge `build/v1` into local `main` (no push); branch `art/v1`.
+0. Branch `art/v1` from `build/v1` (user skipped the v1 final review; no separate plan doc, implement from this spec).
 1. Pipeline: `art/palette.json`, `tools/bake_art.gd`, `bake_art.sh`, `SpriteBank`, bake + bank tests.
 2. Block art: kid, cans, block sheet, street, objects, fx basics; wire into `RunView` → contact sheet for a quick user OK.
 3. Downtown + Highway sheets, `ZoneLook`, light layer → contact sheet + transition screenshots.
