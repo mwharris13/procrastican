@@ -1,0 +1,69 @@
+<h2>The cast — kid poses and cans</h2>
+<p class="subtitle">Drawn at true game size (kid ≈ 24×60 px on the 270-wide screen), shown at 4× so the pixels are visible. The kid only appears at launch and on the results screen; the camera follows the can.</p>
+
+<style>
+  .row { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; margin: 10px 0 26px; }
+  .cell { text-align:center; font-size: 13px; }
+  .cell canvas { display:block; image-rendering: pixelated; image-rendering: crisp-edges; border-radius: 8px; margin-bottom: 6px; }
+  .cell small { opacity:.7; display:block; max-width: 190px; }
+  h3.sec { margin: 18px 0 4px; }
+</style>
+
+<h3 class="sec">Kid (Golden Hour palette)</h3>
+<div class="row" id="kids"></div>
+<h3 class="sec">Cans (shop)</h3>
+<div class="row" id="cans"></div>
+<h3 class="sec">Spin — pre-rendered rotation frames (so pixels stay crisp instead of smearing when rotated)</h3>
+<div class="row" id="spin"></div>
+
+<script>
+(function () {
+  const C = { hood: '#5aa9a0', hoodS: '#468a83', pants: '#3d3a5c', shoe: '#f4ece6', skin: '#efbf94', hair: '#2e2230', pack: '#e5676a', bg1: '#f2a8a6', bg2: '#ffd6a0', side: '#d8b9a8' };
+  const limb = (x, y, len, w, a, col, end) => `<g transform="rotate(${a} ${x} ${y})"><rect x="${x - w / 2}" y="${y}" width="${w}" height="${len}" fill="${col}"/>${end || ''}</g>`;
+  const leg = (x, a) => limb(x, 44, 19, 7, a, C.pants, `<rect x="${x - 4}" y="61" width="11" height="4" fill="${C.shoe}"/>`);
+  const arm = (x, a, len = 15) => limb(x, 25, len, 5, a, C.hoodS, `<circle cx="${x}" cy="${25 + len}" r="2.6" fill="${C.skin}"/>`);
+  function kid(p) {
+    const lean = p.lean || 0, hy = p.headY || 14;
+    let s = `<g transform="rotate(${lean} 24 64)">`;
+    if (!p.armBFront) s += arm(20, p.armB);
+    s += `<rect x="9" y="25" width="8" height="16" rx="2" fill="${C.pack}"/>`;
+    s += leg(21, p.legB) + leg(27, p.legF);
+    s += `<rect x="15" y="23" width="19" height="23" rx="3" fill="${C.hood}"/><rect x="15" y="23" width="5" height="23" fill="${C.hoodS}"/>`;
+    s += `<circle cx="25" cy="${hy}" r="9" fill="${C.skin}"/>`;
+    s += `<path d="M16 ${hy} Q16 ${hy - 13} 25 ${hy - 11} Q35 ${hy - 12} 34 ${hy - 3} L27 ${hy - 4} L22 ${hy - 2}Z" fill="${C.hair}"/>`;
+    s += `<rect x="${p.eyeX || 29}" y="${hy + (p.eyeDY || -1)}" width="2" height="${p.eyeH || 3}" fill="${C.hair}"/>`;
+    if (p.mouth) s += `<rect x="29" y="${hy + 4}" width="4" height="3" fill="#8a3b4a"/>`;
+    s += `<path d="M15 ${hy + 1} Q25 ${hy - 16} 35 ${hy + 1}" fill="none" stroke="${C.hair}" stroke-width="2"/><rect x="14" y="${hy - 2}" width="4" height="6" fill="${C.pack}"/>`;
+    if (p.armBFront) s += arm(18, p.armB);
+    s += (p.armF.length ? p.armF : arm(31, p.armF));
+    if (p.phone) s += `<rect x="35" y="29" width="5" height="8" fill="#2e2230"/><rect x="36" y="30" width="3" height="5" fill="#bfe6ff"/><path d="M38 30 L31 ${hy + 1} L33 ${hy + 3}Z" fill="#bfe6ff" opacity=".25"/>`;
+    return s + `</g>`;
+  }
+  const POSES = [
+    ['Idle', 'Scrolling their phone instead of kicking. Blinks every few seconds.', { legB: 0, legF: 0, armB: 8, armF: arm(31, -70, 11), phone: true, headY: 15, eyeDY: 1, eyeH: 2 }],
+    ['Aim', 'Winds the leg back as you pull; lean scales with drag strength.', { lean: -8, legB: 0, legF: 55, armB: -50, armF: 60 }],
+    ['Kick', 'Release frame, held 2 frames during hit-stop.', { legB: 4, legF: -75, armB: -60, armF: 45 }],
+    ['Watch', 'Hand shading eyes while the can flies off-screen.', { legB: 0, legF: -6, armB: 10, armF: arm(31, -150, 14) }],
+    ['Cheer', 'Results screen on a new best. (Shrug variant otherwise.)', { legB: 12, legF: -12, armB: 150, armF: -150, armBFront: true, mouth: true, eyeH: 2 }],
+  ];
+
+  function soda() { return `<rect x="0" y="0" width="18" height="26" rx="2" fill="#e63946"/><rect x="0" y="0" width="18" height="4" fill="#e6e6e6"/><rect x="0" y="22" width="18" height="4" fill="#bdbdbd"/><rect x="4" y="10" width="9" height="3" fill="#fff"/><rect x="14" y="4" width="2" height="18" fill="#ff7a83"/><rect x="2" y="4" width="2" height="18" fill="#b52a36"/>`; }
+  function paint() { return `<path d="M-1 4 Q9 -9 19 4" fill="none" stroke="#7b8a8f" stroke-width="1.5"/><rect x="-1" y="3" width="20" height="23" rx="1" fill="#9aa7b8"/><rect x="-1" y="3" width="20" height="3" fill="#c8d0dc"/><rect x="2" y="9" width="14" height="10" fill="#f4ece6"/><rect x="4" y="11" width="10" height="6" fill="#5aa9a0"/><path d="M2 6 L5 6 L5 12 Q3.5 14 2 12Z" fill="#5aa9a0"/><rect x="15" y="6" width="3" height="20" fill="#7a8798"/>`; }
+  function lucky() { return `<rect x="0" y="0" width="18" height="26" rx="2" fill="#e0b13f"/><rect x="0" y="0" width="18" height="4" fill="#fff1b8"/><rect x="0" y="22" width="18" height="4" fill="#b88a2a"/><g fill="#3f9a5c"><circle cx="7" cy="11" r="2.4"/><circle cx="11" cy="11" r="2.4"/><circle cx="7" cy="15" r="2.4"/><circle cx="11" cy="15" r="2.4"/></g><rect x="8.5" y="15" width="1.5" height="5" fill="#2f7a47"/><rect x="14" y="4" width="2" height="18" fill="#fff1b8" opacity=".7"/><rect x="3" y="5" width="1" height="1" fill="#fff"/><rect x="15" y="20" width="1" height="1" fill="#fff"/>`; }
+
+  function draw(container, w, h, scale, svgInner, label, note, bg) {
+    const cell = document.createElement('div'); cell.className = 'cell';
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h; cv.style.width = (w * scale) + 'px'; cv.style.height = (h * scale) + 'px';
+    cell.appendChild(cv); cell.insertAdjacentHTML('beforeend', `<b>${label}</b>${note ? `<small>${note}</small>` : ''}`);
+    container.appendChild(cell);
+    const img = new Image();
+    img.onload = () => { const x = cv.getContext('2d'); x.imageSmoothingEnabled = false; x.drawImage(img, 0, 0); };
+    img.src = URL.createObjectURL(new Blob([`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" shape-rendering="crispEdges">${bg || ''}${svgInner}</svg>`], { type: 'image/svg+xml' }));
+  }
+  const kidBg = `<defs><linearGradient id="k" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.bg1}"/><stop offset="1" stop-color="${C.bg2}"/></linearGradient></defs><rect width="64" height="76" fill="url(#k)"/><rect y="66" width="64" height="10" fill="${C.side}"/>`;
+  POSES.forEach(([n, note, p]) => draw(document.getElementById('kids'), 64, 76, 3, `<g transform="translate(8 3)">${kid(p)}</g>`, n, note, kidBg));
+  const canBg = `<rect width="40" height="40" fill="#f2c4b4"/>`;
+  [['Soda Can', 'Balanced. Trusty.', soda], ['Paint Can', 'Heavy: keeps speed, bounces lower', paint], ['Lucky Can', '+50% coins, a bit less bounce', lucky]].forEach(([n, note, f]) => draw(document.getElementById('cans'), 40, 40, 5, `<g transform="translate(11 8)">${f()}</g>`, n, note, canBg));
+  for (let i = 0; i < 8; i++) draw(document.getElementById('spin'), 36, 36, 4, `<g transform="rotate(${i * 45} 18 18) translate(9 5)">${soda()}</g>`, `${i * 45}°`, '', `<rect width="36" height="36" fill="#f2c4b4"/>`);
+})();
+</script>
