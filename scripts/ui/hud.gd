@@ -8,6 +8,7 @@ var combo_label: Label
 var info_label: Label
 var message_label: Label
 var _combo_chip: Chip
+var _message_chip: Chip
 
 
 func _ready() -> void:
@@ -34,7 +35,12 @@ func _ready() -> void:
 	top.add_child(_combo_chip)
 	combo_label = _combo_chip.label
 	info_label = _label(Rect2(8, 44, 254, 24), HORIZONTAL_ALIGNMENT_LEFT)
-	message_label = _label(Rect2(10, 470, 250, 40), HORIZONTAL_ALIGNMENT_CENTER)
+	_message_chip = Chip.new(false, UiTheme.SMALL)
+	_message_chip.visible = false
+	_message_chip.position = Vector2(135, 470)
+	_message_chip.resized.connect(func(): _message_chip.position.x = (270 - _message_chip.size.x) / 2.0)
+	root.add_child(_message_chip)
+	message_label = _message_chip.label
 
 
 func _label(r: Rect2, align: HorizontalAlignment) -> Label:
@@ -60,6 +66,8 @@ func set_combo(n: int) -> void:
 
 func show_message(t: String) -> void:
 	message_label.text = t
+	_message_chip.visible = t != ""
+	_message_chip.reset_size()
 
 
 func show_info(t: String) -> void:
