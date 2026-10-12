@@ -208,3 +208,24 @@ func test_trampoline_puddle_bounces_up():
 	var ev := _until_type(s, "hazard").filter(func(e): return e.type == "hazard")
 	assert_true(ev[-1].trampoline)
 	assert_gt(s.can.vel.y, 0.0)
+
+func _rolling_sim() -> RunSim:
+	var s := RunSim.new(stats)
+	s.launch(45.0, 1.0)
+	s.can.rolling = true
+	s.can.vel = Vector2(20.0, 0.0)
+	s.can.pos = Vector2.ZERO
+	s.street = _street("storm_drain", {"kind": "hazard", "width": 0.5, "speed_keep": 0.5}, 3.0)
+	return s
+
+func test_rolling_can_catches_narrow_hazard_in_one_big_step():
+	var s := _rolling_sim()
+	var ev := s.advance(0.5)
+	var hz := ev.filter(func(e): return e.type == "hazard")
+	assert_eq(hz.size(), 1)
+	assert_lt(s.can.vel.x, 12.0)
+
+func test_rolling_can_catches_narrow_hazard_in_small_steps():
+	var s := _rolling_sim()
+	var hz := _until_type(s, "hazard").filter(func(e): return e.type == "hazard")
+	assert_eq(hz.size(), 1)

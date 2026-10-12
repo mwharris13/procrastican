@@ -125,13 +125,16 @@ func _check_street(prev: Vector2, chunk: Array, events: Array) -> void:
 	for ev in chunk:
 		if ev.type == "touchdown":
 			probe_x = ev.x
+	var span_start := probe_x
 	if is_nan(probe_x) and can.rolling:
+		# Test the whole rolled span so a big step can't skip a narrow hazard.
 		probe_x = now.x
+		span_start = prev.x
 	if is_nan(probe_x):
 		return
-	for obj in street.objects_between(probe_x - MAX_HAZARD_W, probe_x):
+	for obj in street.objects_between(span_start - MAX_HAZARD_W, probe_x):
 		var def: Dictionary = street.objects[obj.id]
-		if def.kind != "hazard" or _used.has(obj.x) or probe_x > obj.x + float(def.width):
+		if def.kind != "hazard" or _used.has(obj.x) or span_start > obj.x + float(def.width):
 			continue
 		_used[obj.x] = true
 		var tramp: bool = obj.id == "puddle" and stats.puddle_trampoline >= 1.0
