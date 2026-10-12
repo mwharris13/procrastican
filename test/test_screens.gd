@@ -18,6 +18,7 @@ func test_perk_pick_offers_and_emits_choice():
 	var perks := GameData.load_all().perks.slice(0, 3)
 	p.show_perks(perks)
 	p._shown_ms -= 1000
+	p.buttons[1].modulate.a = 1.0
 	assert_eq(p.buttons.size(), 3)
 	assert_eq(p.buttons[1].perk.name, perks[1].name)
 	p.buttons[1].pressed.emit()
@@ -107,3 +108,25 @@ func test_bad_import_leaves_save_untouched():
 func test_logo_and_icon_sprites_exist():
 	assert_true(SpriteBank.has("ui", "logo"))
 	assert_true(SpriteBank.has("app", "icon"))
+
+func test_perk_card_not_pickable_until_popped_in():
+	var p: PerkPickScreen = _add(PerkPickScreen.new())
+	watch_signals(p)
+	p.show_perks(GameData.load_all().perks.slice(0, 3))
+	p._shown_ms -= 1000
+	assert_true(p.armed())
+	p.buttons[0].pressed.emit()
+	assert_signal_not_emitted(p, "picked")
+	p.buttons[0].modulate.a = 1.0
+	p.buttons[0].pressed.emit()
+	assert_signal_emitted(p, "picked")
+
+func test_results_count_stops_ticking_when_hidden():
+	var r: ResultsScreen = _add(ResultsScreen.new())
+	watch_signals(r)
+	r.show_results(10.0, 1, 1000.0, false)
+	await wait_seconds(0.2)
+	r.hide()
+	var ticks: int = get_signal_emit_count(r, "coin_tick")
+	await wait_seconds(0.8)
+	assert_eq(get_signal_emit_count(r, "coin_tick"), ticks)

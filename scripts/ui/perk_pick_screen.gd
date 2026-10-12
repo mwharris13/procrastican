@@ -35,7 +35,7 @@ func show_perks(perks: Array, distance := -1.0) -> void:
 		var card := PerkCard.new()
 		card.setup(perk)
 		card.pressed.connect(func():
-			if armed():
+			if armed() and card.modulate.a > 0.0:
 				picked.emit(perk))
 		box.add_child(card)
 		buttons.append(card)

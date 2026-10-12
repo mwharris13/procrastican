@@ -62,6 +62,7 @@ func _init() -> void:
 			shop.emit())
 	kid = KidPose.new()
 	add_child(kid)
+	visibility_changed.connect(_on_visibility_changed)
 
 
 func _label(size: int) -> Label:
@@ -116,6 +117,14 @@ func finish_count() -> void:
 	if _count_tween:
 		_count_tween.kill()
 	_set_count(coins_target)
+
+
+# Leaving the screen must not leave a count-up ticking in the background.
+func _on_visibility_changed() -> void:
+	if not visible and _count_tween:
+		_count_tween.kill()
+		_last_step = COUNT_STEPS
+		coins_label.text = "+" + NumFmt.format(coins_target)
 
 
 func _start_count() -> void:

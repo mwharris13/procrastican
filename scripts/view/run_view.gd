@@ -36,6 +36,7 @@ var _since_launch := 0.0
 var _blink_in := 3.0
 var _blink_left := 0.0
 var _light_layer: LightLayer
+var _frame_lamps: Array = []
 
 
 static func default_zones() -> Array:
@@ -229,6 +230,7 @@ func _draw() -> void:
 	_draw_sky(size, lx)
 	_draw_far(size, lx)
 	_draw_street(size, lx)
+	_frame_lamps = _lamps(size)
 	_draw_buildings(size)
 	_draw_objects(size, tint)
 	if state != "idle":
@@ -345,7 +347,7 @@ func _draw_buildings(size: Vector2) -> void:
 		if b.sheet == "block":
 			SpriteBank.draw(self, "block", "house_shadow", Vector2(cx - 68, base), Color(1, 1, 1, 0.28))
 		SpriteBank.draw(self, b.sheet, b.name, Vector2(cx, base))
-	for l in _lamps(size):
+	for l in _frame_lamps:
 		if l.sheet == "downtown":
 			SpriteBank.draw(self, "downtown", "streetlight", Vector2(l.x, base))
 
@@ -370,8 +372,9 @@ func _lamps(size: Vector2) -> Array:
 	return out
 
 
-func lamp_pools(size: Vector2) -> Array:
-	return _lamps(size).map(func(l): return l.pool)
+## Pools for the lamps computed in the latest _draw (shared with the light layer).
+func lamp_pools(_size: Vector2) -> Array:
+	return _frame_lamps.map(func(l): return l.pool)
 
 
 func _draw_objects(size: Vector2, tint: Color) -> void:

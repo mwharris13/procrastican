@@ -14,8 +14,7 @@ static func frame(sheet: String, sprite: String) -> Dictionary:
 	if s.is_empty() or not s.regions.has(sprite):
 		_warn_once("%s/%s" % [sheet, sprite], "SpriteBank: unknown sprite %s/%s" % [sheet, sprite])
 		return {}
-	var r: Dictionary = s.regions[sprite]
-	return {"tex": s.tex, "region": Rect2(r.x, r.y, r.w, r.h), "anchor": Vector2(r.ax, r.ay)}
+	return s.frames[sprite]
 
 
 static func has(sheet: String, sprite: String) -> bool:
@@ -42,7 +41,11 @@ static func _sheet(sheet: String) -> Dictionary:
 	var tex = load(DIR + sheet + ".png") if ResourceLoader.exists(DIR + sheet + ".png") else null
 	var regions = JSON.parse_string(FileAccess.get_file_as_string(DIR + sheet + ".json")) if FileAccess.file_exists(DIR + sheet + ".json") else null
 	if tex is Texture2D and regions is Dictionary:
-		loaded = {"tex": tex, "regions": regions}
+		var frames := {}
+		for k in regions:
+			var r: Dictionary = regions[k]
+			frames[k] = {"tex": tex, "region": Rect2(r.x, r.y, r.w, r.h), "anchor": Vector2(r.ax, r.ay)}
+		loaded = {"tex": tex, "regions": regions, "frames": frames}
 	else:
 		_warn_once(sheet, "SpriteBank: missing sheet %s" % sheet)
 	_sheets[sheet] = loaded

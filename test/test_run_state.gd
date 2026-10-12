@@ -53,3 +53,11 @@ func test_coins_use_formula():
 	var r := RunState.new(stats, d.zones)
 	r.on_distance(300.0)
 	assert_eq(r.coins(), Economy.run_coins(r.value_meters, stats.coin_per_meter, stats.coin_mult))
+
+func test_perfects_count_only_perfect_grades():
+	var r := RunState.new(stats, d.zones)
+	r.on_grade(TapJudge.Grade.PERFECT)
+	r.on_grade(TapJudge.Grade.GOOD)
+	r.on_grade(TapJudge.Grade.MISS)
+	r.on_grade(TapJudge.Grade.PERFECT)
+	assert_eq(r.perfects, 2)
