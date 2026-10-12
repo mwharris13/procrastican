@@ -1,0 +1,144 @@
+<h2>Art direction — which mood?</h2>
+<p class="subtitle">Same Block-zone moment in three directions, drawn as vector shapes and snapped to the 270-wide pixel grid (exactly how the real sprites would be built). Below each phone: the kid + can at 3× so you can see the pixels.</p>
+
+<style>
+  .cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; }
+  .phone { width: 270px; height: 585px; border-radius: 30px; border: 6px solid #222; overflow: hidden; margin: 0 auto; background:#000; }
+  canvas { display:block; image-rendering: pixelated; image-rendering: crisp-edges; }
+  .phone canvas { width:270px; height:585px; }
+  .zoom { margin: 10px auto 0; border-radius: 8px; overflow:hidden; width: 270px; }
+  .zoom canvas { width:270px; height:225px; }
+  .card-image { padding: 14px 0; display:block !important; height:auto !important; aspect-ratio:auto !important; }
+</style>
+
+<div class="cards">
+  <div class="card" data-choice="sunny" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="phone"><canvas data-dir="sunny"></canvas></div><div class="zoom"><canvas data-zoom="sunny"></canvas></div></div>
+    <div class="card-body"><h3>A · Sunny Suburb</h3><p>The placeholder grown up. Bright afternoon, no outlines, one soft shade tone per shape. Calm and clean; kid in a yellow hoodie.</p></div>
+  </div>
+  <div class="card" data-choice="golden" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="phone"><canvas data-dir="golden"></canvas></div><div class="zoom"><canvas data-zoom="golden"></canvas></div></div>
+    <div class="card-body"><h3>B · Golden Hour Skip-Day</h3><p>Late-afternoon "should be doing homework" vibe. Sunset sky, long shadows, warm rim light, lit windows. Kid with backpack + headphones. Coziest, most atmospheric.</p></div>
+  </div>
+  <div class="card" data-choice="toon" onclick="toggleSelect(this)">
+    <div class="card-image"><div class="phone"><canvas data-dir="toon"></canvas></div><div class="zoom"><canvas data-zoom="toon"></canvas></div></div>
+    <div class="card-body"><h3>C · Toon Outline</h3><p>Saturday-morning cartoon. Dark plum outlines on everything, punchier colors, big-head kid in a backwards cap. Loudest, reads best at a glance during fast play.</p></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const P = {
+    sunny: { sky:['#8fd3f4','#cdeaf5','#fbe3c4'], sun:'#fff4d6', sunX:210, sunY:110, sunR:24, cloud:'#ffffff',
+      hillFar:'#bfe0b5', hillNear:'#a8d5a2',
+      houses:[['#f7b267','#e59a52','#e5676a'],['#9ad1d4','#7fbcc0','#4a6fa5'],['#f4d35e','#e2bd45','#ee964b'],['#c3b1e1','#a996cc','#7d6b9e']],
+      win:'#fff6e0', door:'#7a5c61', bush:'#8cc084', side:'#e3ddd3', curb:'#c9c2b8', road:'#5d5f71', lane:'#e9e6ee',
+      hood:'#ffd166', hoodS:'#ecb442', pants:'#3a4a7a', shoe:'#ffffff', skin:'#f2c79a', hair:'#3d2c2e', mail:'#4a6fa5',
+      ink:null, shadow:null, rim:null, headR:9, hat:'hair', pack:false, phones:false, text:'#2f3245' },
+    golden: { sky:['#6c6fb4','#c995c0','#f2a8a6','#ffd6a0'], sun:'#ffe9b0', sunX:226, sunY:296, sunR:34, cloud:'#f7c6c0',
+      hillFar:'#c98fa8', hillNear:'#a7799b',
+      houses:[['#e8a47a','#c9825e','#b9566a'],['#8fb3c0','#7193a3','#4b5a8a'],['#e2c06a','#c3a04f','#c87444'],['#b39ccf','#957fb4','#6a5687']],
+      win:'#ffe08a', door:'#5b4352', bush:'#7f8f6a', side:'#d8b9a8', curb:'#b89a8f', road:'#4b4560', lane:'#e8d6d0',
+      hood:'#5aa9a0', hoodS:'#468a83', pants:'#3d3a5c', shoe:'#f4ece6', skin:'#efbf94', hair:'#2e2230', mail:'#4b5a8a',
+      ink:null, shadow:'#3b2d4a', rim:'#ffe3c0', headR:9, hat:'hair', pack:true, phones:true, text:'#3b2d4a' },
+    toon: { sky:['#5ec8f2','#bfe9f7'], sun:'#ffe066', sunX:210, sunY:110, sunR:22, cloud:'#ffffff',
+      hillFar:'#7fd17a', hillNear:'#5cbf63',
+      houses:[['#ff9f5a','#ec8440','#ff5d6c'],['#5ad1d6','#3fb8bd','#3d6fd6'],['#ffd23f','#efbd1f','#ff7b2e'],['#c58cf2','#ab6fdc','#8a5ad6']],
+      win:'#fffbe6', door:'#6b3f5c', bush:'#3fae55', side:'#efe7dc', curb:'#cfc4b6', road:'#4a4c63', lane:'#ffffff',
+      hood:'#3d9df2', hoodS:'#2a82d4', pants:'#2b2140', shoe:'#ffffff', skin:'#f7c89b', hair:'#2b2140', mail:'#3d6fd6',
+      ink:'#2b2140', shadow:null, rim:null, headR:12, hat:'cap', pack:false, phones:false, text:'#2b2140' }
+  };
+
+  function scene(p) {
+    const S = p.ink ? `stroke="${p.ink}" stroke-width="1.4" stroke-linejoin="round"` : '';
+    const O = (x) => p.ink ? x : '';
+    const stops = p.sky.map((c, i) => `<stop offset="${i / (p.sky.length - 1)}" stop-color="${c}"/>`).join('');
+    let s = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 585" width="270" height="585" shape-rendering="crispEdges">
+      <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">${stops}</linearGradient></defs>
+      <rect width="270" height="585" fill="url(#sky)"/>
+      <circle cx="${p.sunX}" cy="${p.sunY}" r="${p.sunR}" fill="${p.sun}" ${S}/>`;
+    // Clouds
+    [[52, 92, 30], [150, 62, 22], [92, 160, 18]].forEach(([x, y, r]) => {
+      s += `<g fill="${p.cloud}" ${S}><ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 0.36}"/><ellipse cx="${x - r * 0.3}" cy="${y - r * 0.22}" rx="${r * 0.45}" ry="${r * 0.32}"/><ellipse cx="${x + r * 0.25}" cy="${y - r * 0.28}" rx="${r * 0.38}" ry="${r * 0.3}"/></g>`;
+    });
+    s += `<path d="M0 318 Q40 278 85 310 Q130 268 175 308 Q220 276 270 302 L270 362 L0 362Z" fill="${p.hillFar}" ${S}/>
+      <path d="M0 340 Q50 312 100 336 Q150 315 200 338 Q240 322 270 332 L270 362 L0 362Z" fill="${p.hillNear}" ${S}/>`;
+    // Houses
+    const hs = [[4, 66, 58], [84, 54, 46], [152, 70, 62], [236, 60, 50]];
+    hs.forEach(([x, w, h], i) => {
+      const c = p.houses[i], b = 360, t = b - h;
+      if (p.shadow) s += `<path d="M${x} ${b} L${x + w} ${b} L${x + w - 34} ${b + 16} L${x - 34} ${b + 16}Z" fill="${p.shadow}" opacity="0.28"/>`;
+      s += `<rect x="${x}" y="${t}" width="${w}" height="${h}" fill="${c[0]}"/>
+        <rect x="${p.shadow ? x : x + w - 8}" y="${t}" width="8" height="${h}" fill="${c[1]}"/>`;
+      if (p.rim) s += `<rect x="${x + w - 3}" y="${t}" width="3" height="${h}" fill="${p.rim}" opacity="0.7"/>`;
+      s += O(`<rect x="${x}" y="${t}" width="${w}" height="${h}" fill="none" ${S}/>`);
+      s += `<path d="M${x - 6} ${t + 2} L${x + w / 2} ${t - 26} L${x + w + 6} ${t + 2}Z" fill="${c[2]}" ${S}/>`;
+      if (p.rim) s += `<path d="M${x + w / 2} ${t - 26} L${x + w + 6} ${t + 2} L${x + w + 2} ${t + 2} L${x + w / 2} ${t - 22}Z" fill="${p.rim}" opacity="0.55"/>`;
+      s += `<rect x="${x + 9}" y="${t + 12}" width="13" height="13" fill="${p.win}" ${S}/>
+        <rect x="${x + 15}" y="${t + 12}" width="1.5" height="13" fill="${p.door}"/>
+        <rect x="${x + w - 24}" y="${b - 23}" width="12" height="23" fill="${p.door}" ${S}/>`;
+      if (p.win === '#ffe08a') s += `<rect x="${x + 6}" y="${t + 9}" width="19" height="19" fill="#ffe08a" opacity="0.25"/>`;
+      s += `<ellipse cx="${x + 6}" cy="${b - 2}" rx="9" ry="6" fill="${p.bush}" ${S}/>`;
+    });
+    // Sidewalk + road
+    s += `<rect y="358" width="270" height="20" fill="${p.side}"/>
+      ${[40, 100, 160, 220].map(x => `<rect x="${x}" y="358" width="1.5" height="20" fill="${p.curb}"/>`).join('')}
+      <rect y="376" width="270" height="4" fill="${p.curb}"/>
+      <rect y="380" width="270" height="205" fill="${p.road}"/>
+      ${[8, 76, 144, 212].map(x => `<rect x="${x}" y="470" width="40" height="5" fill="${p.lane}"/>`).join('')}`;
+    // Long shadows for kid & mailbox
+    if (p.shadow) s += `<path d="M30 372 L50 372 L18 384 L-2 384Z" fill="${p.shadow}" opacity="0.3"/><path d="M220 372 L242 372 L206 386 L184 386Z" fill="${p.shadow}" opacity="0.3"/>`;
+    // Mailbox helper
+    s += `<rect x="229" y="348" width="4" height="25" fill="#6b5a4e" ${S}/>
+      <path d="M218 350 L218 340 Q218 333 230 333 Q242 333 242 340 L242 350Z" fill="${p.mail}" ${S}/>
+      <rect x="242" y="331" width="3" height="11" fill="#e63946" ${S}/>`;
+    // Kid
+    const hr = p.headR, hy = 328 - hr;
+    if (p.pack) s += `<rect x="24" y="333" width="10" height="17" rx="2" fill="#e5676a"/>`;
+    s += `<rect x="33" y="352" width="7" height="21" fill="${p.pants}" ${S}/>
+      <rect x="31" y="370" width="11" height="4" fill="${p.shoe}" ${S}/>
+      <g transform="rotate(-38 44 353)"><rect x="40" y="349" width="22" height="7" fill="${p.pants}" ${S}/><rect x="60" y="347" width="7" height="10" fill="${p.shoe}" ${S}/></g>
+      <rect x="30" y="330" width="20" height="24" rx="3" fill="${p.hood}" ${S}/>
+      <rect x="30" y="330" width="5" height="24" fill="${p.hoodS}"/>
+      <g transform="rotate(30 33 334)"><rect x="25" y="333" width="6" height="16" fill="${p.hoodS}" ${S}/></g>
+      <circle cx="40" cy="${hy}" r="${hr}" fill="${p.skin}" ${S}/>
+      <rect x="${40 + hr * 0.35}" y="${hy - 1}" width="2" height="3" fill="${p.hair}"/>`;
+    if (p.hat === 'cap') s += `<path d="M${40 - hr} ${hy - 2} Q40 ${hy - hr - 5} ${40 + hr} ${hy - 2}Z" fill="#ff5d6c" ${S}/><rect x="${40 - hr - 6}" y="${hy - 4}" width="8" height="3" fill="#ff5d6c" ${S}/>`;
+    else s += `<path d="M${40 - hr} ${hy} Q${40 - hr} ${hy - hr - 4} 40 ${hy - hr - 2} Q${40 + hr + 2} ${hy - hr - 3} ${40 + hr} ${hy - 3} L${40 + 2} ${hy - 4} L${40 - 3} ${hy - 2}Z" fill="${p.hair}"/>`;
+    if (p.phones) s += `<path d="M${40 - hr - 1} ${hy} Q40 ${hy - hr - 6} ${40 + hr + 1} ${hy}" fill="none" stroke="#2e2230" stroke-width="2"/><rect x="${40 + hr - 2}" y="${hy - 2}" width="4" height="6" fill="#e5676a"/>`;
+    // Speed dots + can
+    s += `<g fill="#ffffff" opacity="0.9">${[[78, 318], [92, 298], [106, 280], [120, 266]].map(([x, y]) => `<rect x="${x}" y="${y}" width="3" height="3"/>`).join('')}</g>
+      <g transform="rotate(28 150 248)">
+        <rect x="141" y="235" width="18" height="26" rx="2" fill="#e63946" ${S}/>
+        <rect x="141" y="235" width="18" height="4" fill="#e6e6e6"/><rect x="141" y="257" width="18" height="4" fill="#bdbdbd"/>
+        <rect x="145" y="245" width="9" height="3" fill="#ffffff"/>
+        ${O(`<rect x="141" y="235" width="18" height="26" rx="2" fill="none" ${S}/>`)}
+      </g>
+      ${[[172, 226, 4], [128, 222, 3], [170, 262, 3.5], [184, 244, 2.5]].map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#ffd166" ${S}/>`).join('')}`;
+    // HUD + popup
+    s += `<rect x="10" y="16" width="96" height="28" rx="6" fill="#ffffff" opacity="0.92" ${S}/>
+      <text x="22" y="36" font-family="Menlo,monospace" font-size="15" font-weight="800" fill="${p.text}">128.4 m</text>
+      <rect x="196" y="16" width="64" height="28" rx="6" fill="${p.text}" ${S}/>
+      <text x="212" y="36" font-family="Menlo,monospace" font-size="15" font-weight="800" fill="#ffd166">x7</text>
+      <text x="150" y="196" text-anchor="middle" font-family="Menlo,monospace" font-size="27" font-weight="900" fill="#ffd166" stroke="${p.text}" stroke-width="3" paint-order="stroke">PERFECT!</text>
+      <text x="150" y="214" text-anchor="middle" font-family="Menlo,monospace" font-size="13" font-weight="800" fill="${p.text}">+340 ¢</text>
+    </svg>`;
+    return s;
+  }
+
+  Object.keys(P).forEach(k => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.querySelector(`canvas[data-dir="${k}"]`);
+      c.width = 270; c.height = 585;
+      const ctx = c.getContext('2d'); ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(img, 0, 0, 270, 585);
+      const z = document.querySelector(`canvas[data-zoom="${k}"]`);
+      z.width = 180; z.height = 150;
+      const zc = z.getContext('2d'); zc.imageSmoothingEnabled = false;
+      zc.drawImage(c, 14, 226, 180, 150, 0, 0, 180, 150);
+    };
+    img.src = URL.createObjectURL(new Blob([scene(P[k])], { type: 'image/svg+xml' }));
+  });
+})();
+</script>

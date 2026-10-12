@@ -39,8 +39,8 @@ more rewarding as skills and gear accumulate across runs.
 
 | Grade | Window (start values, tunable) | Effect |
 |---|---|---|
-| Perfect | ±60 ms | Re-kick forward with speed boost (scaled by Sneakers), combo +1, big juice |
-| Good | ±130 ms | Re-kick with reduced retention, combo kept |
+| Perfect | ±60 ms | Re-kick forward keeping most of its speed (more with Sneakers), combo +1, big juice |
+| Good | ±130 ms | Re-kick keeping less speed, combo kept |
 | Miss / no tap | — | Dead bounce: large energy loss, combo resets |
 
 - At most one graded tap per touchdown. A tap outside the Good window is ignored (unless it triggers an Air Kick);
@@ -80,7 +80,7 @@ coin value. The can's physics stay in a sane range; exponential growth comes fro
 | Zone | Starts at | Value | Flavor |
 |---|---|---|---|
 | Your Block | 0 m | ×1 | Houses, mailboxes, sleeping dog |
-| Downtown | ~400 m | ×10 | Parked cars, storm drains, pigeons |
+| Downtown | ~250 m | ×10 | Parked cars, storm drains, pigeons |
 | Highway Shoulder | ~1,200 m | ×100 | Guardrails, truck draft boost, gravel |
 
 Zone thresholds and values are data and will be tuned.

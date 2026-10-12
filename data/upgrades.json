@@ -1,0 +1,20 @@
+[
+	{"id": "kick_power", "track": "gear", "name": "Kick Power", "desc": "Harder launch kick", "base_cost": 10, "cost_growth": 1.5, "max_level": 40,
+	 "effects": [{"stat": "launch_speed_max", "op": "add", "value": 2.0}, {"stat": "max_speed", "op": "add", "value": 3.0}]},
+	{"id": "sneakers", "track": "gear", "name": "Sneakers", "desc": "Perfect kicks keep more speed", "base_cost": 25, "cost_growth": 1.55, "max_level": 30,
+	 "effects": [{"stat": "perfect_vx_boost", "op": "add", "value": 0.00035}]},
+	{"id": "timing", "track": "skills", "name": "Timing", "desc": "Wider Perfect and Good windows", "base_cost": 12, "cost_growth": 1.5, "max_level": 20,
+	 "effects": [{"stat": "perfect_window", "op": "mul", "value": 1.10}, {"stat": "good_window", "op": "mul", "value": 1.04}]},
+	{"id": "reach", "track": "skills", "name": "Reach", "desc": "Bigger tap area", "base_cost": 20, "cost_growth": 1.6, "max_level": 15,
+	 "effects": [{"stat": "tap_reach_m", "op": "mul", "value": 1.06}]},
+	{"id": "combo", "track": "skills", "name": "Combo", "desc": "Each combo step pays more", "base_cost": 40, "cost_growth": 1.6, "max_level": 30,
+	 "effects": [{"stat": "combo_step", "op": "add", "value": 0.02}]},
+	{"id": "air_kick", "track": "skills", "name": "Air Kick", "desc": "+1 mid-air kick per run", "base_cost": 200, "cost_growth": 2.2, "max_level": 5,
+	 "effects": [{"stat": "air_kicks", "op": "add", "value": 1.0}]},
+	{"id": "perk_odds", "track": "luck", "name": "Perk Odds", "desc": "Rare perks show up more", "base_cost": 100, "cost_growth": 1.6, "max_level": 20,
+	 "effects": [{"stat": "rare_mult", "op": "mul", "value": 1.1}]},
+	{"id": "coin_magnet", "track": "luck", "name": "Coin Magnet", "desc": "+8% coins (compounding)", "base_cost": 50, "cost_growth": 1.5, "max_level": 50,
+	 "effects": [{"stat": "coin_mult", "op": "mul", "value": 1.08}]},
+	{"id": "helpers", "track": "luck", "name": "Helpers", "desc": "More bouncy things on the street", "base_cost": 60, "cost_growth": 1.55, "max_level": 20,
+	 "effects": [{"stat": "helper_freq", "op": "mul", "value": 1.015}]}
+]

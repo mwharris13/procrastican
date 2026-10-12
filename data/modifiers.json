@@ -1,0 +1,7 @@
+[
+	{"id": "nice_day", "name": "Nice Day", "desc": "Nothing weird. Enjoy it.", "weight": 4, "effects": []},
+	{"id": "downhill", "name": "Downhill", "desc": "The street slopes your way", "weight": 2, "effects": [{"stat": "tailwind", "op": "add", "value": 0.6}, {"stat": "ground_friction", "op": "mul", "value": 0.7}]},
+	{"id": "windy", "name": "Windy", "desc": "Tailwind all run", "weight": 2, "effects": [{"stat": "tailwind", "op": "add", "value": 0.8}]},
+	{"id": "garbage_day", "name": "Garbage Day", "desc": "Trash cans everywhere", "weight": 2, "effects": [{"stat": "helper_freq", "op": "mul", "value": 1.6}]},
+	{"id": "rain_slick", "name": "Rain-Slick", "desc": "Slippery and dull bounces, +20% coins", "weight": 2, "effects": [{"stat": "ground_friction", "op": "mul", "value": 0.6}, {"stat": "restitution_good", "op": "mul", "value": 0.9}, {"stat": "restitution_perfect", "op": "mul", "value": 0.93}, {"stat": "coin_mult", "op": "mul", "value": 1.2}]}
+]
