@@ -67,6 +67,9 @@ static func load_from(path: String = DEFAULT_PATH) -> Dictionary:
 
 
 static func save_to(data: Dictionary, path: String = DEFAULT_PATH) -> bool:
+	# Check first: a failed open logs an engine error, which GUT counts as a failure.
+	if not DirAccess.dir_exists_absolute(ProjectSettings.globalize_path(path.get_base_dir())):
+		return false
 	var f := FileAccess.open(path, FileAccess.WRITE)
 	if f == null:
 		return false
