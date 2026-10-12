@@ -19,17 +19,18 @@ static func defaults() -> Dictionary:
 static func normalize(raw: Variant) -> Dictionary:
 	if not (raw is Dictionary) or not raw.has("version") or not raw.has("coins"):
 		return {}
-	if int(raw.version) > VERSION:
+	var version := _to_int(raw.version, -1)
+	if version < 0 or version > VERSION:
 		return {}
 	var d := defaults()
 	d.coins = _nonneg(raw.get("coins", 0.0))
 	d.best_distance = _nonneg(raw.get("best_distance", 0.0))
 	d.lifetime_coins = _nonneg(raw.get("lifetime_coins", 0.0))
-	d.runs = maxi(0, int(raw.get("runs", 0)))
+	d.runs = _to_int(raw.get("runs", 0))
 	var levels = raw.get("levels", {})
 	if levels is Dictionary:
 		for k in levels:
-			d.levels[str(k)] = maxi(0, int(levels[k]))
+			d.levels[str(k)] = _to_int(levels[k])
 	var owned = raw.get("owned_cans", [])
 	if owned is Array:
 		for c in owned:
@@ -38,6 +39,15 @@ static func normalize(raw: Variant) -> Dictionary:
 	var eq := str(raw.get("equipped_can", "soda"))
 	d.equipped_can = eq if d.owned_cans.has(eq) else "soda"
 	return d
+
+
+static func _to_int(v: Variant, fallback: int = 0) -> int:
+	if not (v is int or v is float):
+		return fallback
+	var f := float(v)
+	if not is_finite(f):
+		return fallback
+	return int(clampf(f, 0.0, 1_000_000_000.0))
 
 
 static func _nonneg(v: Variant) -> float:
@@ -74,6 +84,8 @@ static func import_code(code: String) -> Dictionary:
 	if not c.begins_with(CODE_PREFIX):
 		return {}
 	var body := c.substr(CODE_PREFIX.length())
+	for ws in [" ", "\t", "\n", "\r"]:
+		body = body.replace(ws, "")
 	# Pre-validate: base64_to_utf8 logs an engine error on bad input, which GUT counts as a failure.
 	if body.length() % 4 != 0 or not _B64.search(body):
 		return {}

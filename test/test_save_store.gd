@@ -59,3 +59,37 @@ func test_import_rejects_bad_codes():
 	assert_eq(SaveStore.import_code("hello"), {})
 	assert_eq(SaveStore.import_code(SaveStore.CODE_PREFIX + "!!!notbase64"), {})
 	assert_eq(SaveStore.import_code(SaveStore.CODE_PREFIX + Marshalls.utf8_to_base64("[1,2]")), {})
+
+func test_wrong_typed_fields_do_not_error():
+	assert_eq(SaveStore.normalize({"version": [], "coins": 1}), {})
+	assert_eq(SaveStore.normalize({"version": "1", "coins": 1}), {})
+	assert_eq(SaveStore.normalize({"version": 1, "coins": 1, "runs": []}).runs, 0)
+	var n := SaveStore.normalize({"version": 1, "coins": 1, "levels": {"a": {}, "b": 2}})
+	assert_eq(n.levels.a, 0)
+	assert_eq(n.levels.b, 2)
+
+func test_huge_level_clamps():
+	var n := SaveStore.normalize({"version": 1, "coins": 1, "levels": {"a": 1e40}, "runs": 1e40})
+	assert_eq(n.levels.a, 1_000_000_000)
+	assert_eq(n.runs, 1_000_000_000)
+
+func test_code_with_wrapped_whitespace_imports():
+	var d := SaveStore.defaults()
+	d.coins = 4242.0
+	var code := SaveStore.export_code(d)
+	var cut := SaveStore.CODE_PREFIX.length() + 10
+	var wrapped := code.substr(0, cut) + "\n" + code.substr(cut, 7) + " \t\r\n" + code.substr(cut + 7)
+	assert_eq(SaveStore.import_code(wrapped).coins, 4242.0)
+
+func test_export_import_round_trip_all_paddings():
+	var seen := {}
+	for r in [1, 22, 333, 4444, 55555]:
+		var d := SaveStore.defaults()
+		d.coins = 1.5e40
+		d.runs = r
+		var code := SaveStore.export_code(d)
+		seen[code.count("=")] = true
+		var back := SaveStore.import_code(code)
+		assert_almost_eq(back.coins / 1e40, 1.5, 1e-9)
+		assert_eq(back.runs, r)
+	assert_eq(seen.size(), 3, "paddings 0,1,2 all exercised")
