@@ -50,6 +50,7 @@ func test_perk_checkpoint_pauses_and_pick_applies():
 	main.start_run()
 	main._on_progressed(RunState.PERK_FIRST_M + 1.0)
 	main.perk_pick._shown_ms -= 1000
+	main.perk_pick.buttons[0].modulate.a = 1.0
 	assert_eq(main.screen, Main.Screen.PERK)
 	assert_true(get_tree().paused)
 	main.perk_pick.buttons[0].pressed.emit()

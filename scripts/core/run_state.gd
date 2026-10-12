@@ -10,6 +10,7 @@ var zones: Array
 var distance := 0.0
 var combo := 0
 var best_combo := 0
+var perfects := 0
 var value_meters := 0.0
 var zone_index := 0
 var next_perk_at := PERK_FIRST_M
@@ -53,6 +54,7 @@ func on_distance(x: float) -> Array:
 func on_grade(grade: int) -> void:
 	if grade == TapJudge.Grade.PERFECT:
 		combo += 1
+		perfects += 1
 	elif grade == TapJudge.Grade.MISS:
 		combo = 0
 	best_combo = maxi(best_combo, combo)

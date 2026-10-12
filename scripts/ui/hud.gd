@@ -1,12 +1,14 @@
 class_name Hud
 extends CanvasLayer
-## In-run readouts: distance, combo, info line and a bottom message.
+## In-run readouts: distance chip, combo chip, modifier line and a bottom message.
 
 var root: Control
 var distance_label: Label
 var combo_label: Label
 var info_label: Label
 var message_label: Label
+var _combo_chip: Chip
+var _message_chip: Chip
 
 
 func _ready() -> void:
@@ -14,21 +16,40 @@ func _ready() -> void:
 	root = Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.theme = UiTheme.make()
+	root.theme = UiTheme.build()
 	add_child(root)
-	distance_label = _label(Rect2(8, 8, 140, 20), HORIZONTAL_ALIGNMENT_LEFT, 16)
-	combo_label = _label(Rect2(150, 8, 112, 20), HORIZONTAL_ALIGNMENT_RIGHT, 16)
-	info_label = _label(Rect2(8, 30, 254, 16), HORIZONTAL_ALIGNMENT_LEFT, 10)
-	message_label = _label(Rect2(10, 470, 250, 40), HORIZONTAL_ALIGNMENT_CENTER, 13)
-	message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var top := HBoxContainer.new()
+	top.position = Vector2(8, 8)
+	top.size = Vector2(254, 28)
+	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(top)
+	var dist_chip := Chip.new(false, UiTheme.BIG)
+	top.add_child(dist_chip)
+	distance_label = dist_chip.label
+	var gap := Control.new()
+	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top.add_child(gap)
+	_combo_chip = Chip.new(false, UiTheme.BIG)
+	_combo_chip.visible = false
+	top.add_child(_combo_chip)
+	combo_label = _combo_chip.label
+	info_label = _label(Rect2(8, 44, 254, 24), HORIZONTAL_ALIGNMENT_LEFT)
+	_message_chip = Chip.new(false, UiTheme.SMALL)
+	_message_chip.visible = false
+	_message_chip.position = Vector2(135, 470)
+	_message_chip.resized.connect(func(): _message_chip.position.x = (270 - _message_chip.size.x) / 2.0)
+	root.add_child(_message_chip)
+	message_label = _message_chip.label
 
 
-func _label(r: Rect2, align: HorizontalAlignment, size: int) -> Label:
+func _label(r: Rect2, align: HorizontalAlignment) -> Label:
 	var l := Label.new()
 	l.position = r.position
 	l.size = r.size
 	l.horizontal_alignment = align
-	l.add_theme_font_size_override("font_size", size)
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	UiTheme.outlined(l, UiTheme.SMALL)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(l)
 	return l
@@ -40,10 +61,13 @@ func set_distance(m: float) -> void:
 
 func set_combo(n: int) -> void:
 	combo_label.text = "x%d" % n if n > 0 else ""
+	_combo_chip.visible = n > 0
 
 
 func show_message(t: String) -> void:
 	message_label.text = t
+	_message_chip.visible = t != ""
+	_message_chip.reset_size()
 
 
 func show_info(t: String) -> void:

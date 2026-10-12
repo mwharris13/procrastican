@@ -17,7 +17,8 @@ func test_lists_track_upgrades_with_prices():
 	assert_true(shop.rows.has("timing"))
 	assert_false(shop.rows.has("kick_power"))
 	assert_true(shop.rows.timing.disabled)
-	assert_string_contains(shop.rows.timing.text, NumFmt.format(Economy.cost(d.upgrade("timing"), 0)))
+	assert_string_contains(shop.rows.timing.price_label.text, NumFmt.format(Economy.cost(d.upgrade("timing"), 0)))
+	assert_lt(shop.rows.timing.modulate.a, 1.0, "unaffordable rows fade")
 
 func test_buying_updates_save_and_emits_changed():
 	save.coins = 1000.0
@@ -45,4 +46,4 @@ func test_maxed_upgrade_is_disabled():
 	shop.open(save, d)
 	shop.show_track("skills")
 	assert_true(shop.rows.air_kick.disabled)
-	assert_string_contains(shop.rows.air_kick.text, "MAX")
+	assert_string_contains(shop.rows.air_kick.price_label.text, "MAX")

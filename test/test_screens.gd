@@ -18,17 +18,45 @@ func test_perk_pick_offers_and_emits_choice():
 	var perks := GameData.load_all().perks.slice(0, 3)
 	p.show_perks(perks)
 	p._shown_ms -= 1000
+	p.buttons[1].modulate.a = 1.0
 	assert_eq(p.buttons.size(), 3)
-	assert_string_contains(p.buttons[1].text, perks[1].name)
+	assert_eq(p.buttons[1].perk.name, perks[1].name)
 	p.buttons[1].pressed.emit()
 	assert_signal_emitted_with_parameters(p, "picked", [perks[1]])
 
 func test_results_show_numbers():
 	var r: ResultsScreen = _add(ResultsScreen.new())
-	r.show_results(512.3, 14, 3.2e6, true)
-	assert_string_contains(r.summary.text, "512.3")
-	assert_string_contains(r.summary.text, "3.2M")
-	assert_string_contains(r.summary.text, "NEW RECORD")
+	r.show_results(512.3, 14, 3.2e6, true, 23, "Downtown x10")
+	r.finish_count()
+	assert_string_contains(r.distance_label.text, "512.3")
+	assert_string_contains(r.coins_label.text, "3.2M")
+	assert_true(r.stamp.visible)
+	assert_eq(r.kid.pose, "cheer")
+	assert_eq(r.perfects_label.text, "23")
+	assert_eq(r.zone_label.text, "Downtown x10")
+
+func test_results_without_record_shrugs_and_hides_stamp():
+	var r: ResultsScreen = _add(ResultsScreen.new())
+	r.show_results(10.0, 1, 5.0, false)
+	assert_false(r.stamp.visible)
+	assert_eq(r.kid.pose, "shrug")
+
+func test_results_coin_count_ticks_up_to_target():
+	var r: ResultsScreen = _add(ResultsScreen.new())
+	watch_signals(r)
+	r.show_results(10.0, 1, 1000.0, false)
+	assert_eq(r.coins_label.text, "+0")
+	await wait_seconds(1.1)
+	assert_eq(r.coins_label.text, "+" + NumFmt.format(1000.0))
+	assert_signal_emitted(r, "coin_tick")
+
+func test_perk_pick_shows_checkpoint_and_rare_cards_use_lilac():
+	var p: PerkPickScreen = _add(PerkPickScreen.new())
+	var perks := GameData.load_all().perks
+	p.show_perks([perks[0], perks[4]], 250.0)
+	assert_string_contains(p.checkpoint_label.text, "250")
+	assert_eq(p.buttons[0].theme_type_variation, "RowButton")
+	assert_eq(p.buttons[1].theme_type_variation, "RareCard")
 
 func test_perk_pick_ignores_press_until_armed():
 	var p := PerkPickScreen.new()
@@ -76,3 +104,29 @@ func test_bad_import_leaves_save_untouched():
 	assert_false(s.try_import())
 	assert_signal_not_emitted(s, "imported")
 	assert_string_contains(s.status.text, "isn't a valid")
+
+func test_logo_and_icon_sprites_exist():
+	assert_true(SpriteBank.has("ui", "logo"))
+	assert_true(SpriteBank.has("app", "icon"))
+
+func test_perk_card_not_pickable_until_popped_in():
+	var p: PerkPickScreen = _add(PerkPickScreen.new())
+	watch_signals(p)
+	p.show_perks(GameData.load_all().perks.slice(0, 3))
+	p._shown_ms -= 1000
+	assert_true(p.armed())
+	p.buttons[0].pressed.emit()
+	assert_signal_not_emitted(p, "picked")
+	p.buttons[0].modulate.a = 1.0
+	p.buttons[0].pressed.emit()
+	assert_signal_emitted(p, "picked")
+
+func test_results_count_stops_ticking_when_hidden():
+	var r: ResultsScreen = _add(ResultsScreen.new())
+	watch_signals(r)
+	r.show_results(10.0, 1, 1000.0, false)
+	await wait_seconds(0.2)
+	r.hide()
+	var ticks: int = get_signal_emit_count(r, "coin_tick")
+	await wait_seconds(0.8)
+	assert_eq(get_signal_emit_count(r, "coin_tick"), ticks)

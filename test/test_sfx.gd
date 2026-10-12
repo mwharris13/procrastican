@@ -22,7 +22,7 @@ func test_make_stays_in_range():
 func test_sfx_builds_all_streams_and_plays_safely():
 	var s := Sfx.new()
 	add_child_autofree(s)
-	for k in ["kick", "perfect", "good", "miss", "helper", "hazard", "coin", "ui"]:
+	for k in ["kick", "perfect", "good", "miss", "helper", "hazard", "coin", "ui", "tick"]:
 		assert_true(s.streams.has(k), k)
 	s.play("kick", 1.2)
 	s.play("nope")

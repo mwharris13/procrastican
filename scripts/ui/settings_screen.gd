@@ -14,14 +14,17 @@ var _confirm_until_ms := 0
 
 func _init() -> void:
 	super()
-	add_title("Settings", 20)
-	add_label("Your save code (copy it somewhere safe):", 11)
+	set_dim(0.7)
+	add_title("Settings", UiTheme.BIG)
+	begin_card()
+	add_label("Your save code (copy it somewhere safe):")
 	export_box = _text_box(false)
-	add_button("Copy code", _copy)
-	add_label("Paste a code to restore:", 11)
+	add_button("Copy code", _copy, "small")
+	add_label("Paste a code to restore:")
 	import_box = _text_box(true)
-	add_button("Import", try_import)
-	status = add_label("", 11)
+	add_button("Import", try_import, "small")
+	status = add_label("")
+	end_card()
 	add_button("Back", func(): back.emit())
 
 
@@ -30,7 +33,7 @@ func _text_box(editable: bool) -> TextEdit:
 	t.custom_minimum_size = Vector2(0, 60)
 	t.editable = editable
 	t.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
-	box.add_child(t)
+	_target.add_child(t)
 	return t
 
 

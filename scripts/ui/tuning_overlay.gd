@@ -29,7 +29,7 @@ func _ready() -> void:
 	visible = false
 	var panel := PanelContainer.new()
 	panel.set_anchors_preset(Control.PRESET_FULL_RECT)
-	panel.theme = UiTheme.make()
+	panel.theme = UiTheme.build()
 	panel.theme.default_font_size = 9
 	var bg := StyleBoxFlat.new()
 	bg.bg_color = Color(0, 0, 0, 0.8)

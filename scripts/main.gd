@@ -73,6 +73,7 @@ func _build_menus() -> void:
 	title.settings.connect(open_settings)
 	perk_pick.picked.connect(_on_perk_picked)
 	results.again.connect(start_run)
+	results.coin_tick.connect(func(progress: float): sfx.play("tick", 0.9 + 0.5 * progress))
 	results.shop.connect(open_shop)
 	shop.changed.connect(_persist)
 	shop.back.connect(show_title)
@@ -84,20 +85,21 @@ func _build_notices() -> void:
 	var layer := CanvasLayer.new()
 	layer.layer = 6
 	add_child(layer)
-	var theme := UiTheme.make()
+	var theme := UiTheme.build()
 	toast_label = Label.new()
 	toast_label.theme = theme
 	toast_label.position = Vector2(10, 540)
 	toast_label.size = Vector2(250, 20)
 	toast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	UiTheme.outlined(toast_label, UiTheme.SMALL)
 	toast_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(toast_label)
 	pause_label = Label.new()
 	pause_label.theme = theme
-	pause_label.text = "Paused. Tap to resume."
-	pause_label.add_theme_font_size_override("font_size", 18)
+	pause_label.text = "Paused.\nTap to resume."
+	UiTheme.outlined(pause_label, UiTheme.BIG)
 	pause_label.position = Vector2(10, 260)
-	pause_label.size = Vector2(250, 30)
+	pause_label.size = Vector2(250, 40)
 	pause_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	pause_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	pause_label.visible = false
@@ -148,7 +150,8 @@ func start_run() -> void:
 	_resolve_stats()
 	run_state = RunState.new(stats, data.zones)
 	var street := StreetGen.new(_rng.randi(), data.zones, data.objects, stats.helper_freq)
-	run_view.set_palette(data.zones[0].palette)
+	run_view.set_zones(data.zones)
+	run_view.can_sprite = save.equipped_can
 	run_view.start_aim(stats, street)
 	hud.set_distance(0.0)
 	hud.set_combo(0)
@@ -177,8 +180,7 @@ func _on_progressed(x: float) -> void:
 	for ev in run_state.on_distance(x):
 		if ev.type == "zone":
 			var z: Dictionary = data.zones[ev.index]
-			run_view.set_palette(z.palette)
-			juice.popup("%s  x%s" % [z.name, NumFmt.format(float(z.value))], Vector2(135, 160), UiTheme.GOLD, 16)
+			juice.popup("%s  x%s" % [z.name, NumFmt.format(float(z.value))], Vector2(135, 160), UiTheme.GOLD)
 			sfx.play("coin")
 		elif ev.type == "perk_due":
 			_perks_pending += 1
@@ -194,7 +196,7 @@ func _offer_perk() -> void:
 		return
 	_perks_pending -= 1
 	juice.end_hitstop()
-	perk_pick.show_perks(offers)
+	perk_pick.show_perks(offers, run_state.distance)
 	_show(Screen.PERK)
 
 
@@ -226,7 +228,9 @@ func _on_run_ended(_ev: Dictionary) -> void:
 	save.runs += 1
 	save.best_distance = maxf(save.best_distance, run_state.distance)
 	_persist()
-	results.show_results(run_state.distance, run_state.best_combo, coins, record)
+	var zone: Dictionary = data.zones[run_state.zone_index]
+	results.show_results(run_state.distance, run_state.best_combo, coins, record, run_state.perfects,
+		"%s x%s" % [zone.name, NumFmt.format(float(zone.value))])
 	sfx.play("coin")
 	_show(Screen.RESULTS)
 

@@ -35,9 +35,33 @@ func test_popup_and_burst_create_nodes():
 	assert_eq(l.get_parent(), j.popup_layer)
 	var host := Node2D.new()
 	add_child_autofree(host)
-	var p := j.burst(host, Vector2(50, 50), Color.WHITE)
+	var p := j.burst(host, Vector2(50, 50), "spark")
 	assert_eq(p.get_parent(), host)
 	assert_true(p.emitting)
+	assert_not_null(p.texture)
+
+func test_burst_missing_sprite_does_not_crash():
+	var host := Node2D.new()
+	add_child_autofree(host)
+	var p := j.burst(host, Vector2.ZERO, "nope")
+	assert_not_null(p)
+	assert_null(p.texture)
+
+func test_flash_frees_itself_after_frames_on_real_time():
+	var host := Node2D.new()
+	add_child_autofree(host)
+	var n := j.flash(host, Vector2(10, 10), "fx", "perfect_burst", 3, 0.05)
+	j.advance_real(0.1)
+	assert_true(is_instance_valid(n) and not n.is_queued_for_deletion())
+	j.advance_real(0.06)
+	assert_true(n.is_queued_for_deletion())
+
+func test_flash_missing_sprite_does_not_crash():
+	var host := Node2D.new()
+	add_child_autofree(host)
+	j.flash(host, Vector2.ZERO, "fx", "nope", 2)
+	j.advance_real(0.01)
+	assert_true(true)
 
 func test_leaving_tree_mid_hitstop_restores_time_scale():
 	var other := Juice.new()

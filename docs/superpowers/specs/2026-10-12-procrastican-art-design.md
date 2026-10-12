@@ -98,6 +98,8 @@ Zone sky stops also move into `data/zones.json` (`palette.sky`, 4 hex stops) so 
 
 Object sprites are drawn at roughly their gameplay footprint (`width × px_per_m` for hazards); collision data is unchanged.
 
+**Scale note:** collision-bearing sprites are drawn at physics scale (can 9×13, objects at their collision height, kid ~42 px), not the mockups' ~2× size.
+
 ## 5. Run scene
 
 `RunView` keeps immediate-mode `_draw()`; only the `_draw_*` helpers change to draw sprites via `SpriteBank`.
