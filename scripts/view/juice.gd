@@ -21,6 +21,12 @@ func _ready() -> void:
 	_last_usec = Time.get_ticks_usec()
 
 
+func _exit_tree() -> void:
+	# Only restore when a hit-stop is active so an idle Juice leaves external time_scale alone.
+	if _hitstop_left > 0.0:
+		end_hitstop()
+
+
 func _process(_delta: float) -> void:
 	var now := Time.get_ticks_usec()
 	advance_real((now - _last_usec) / 1_000_000.0)

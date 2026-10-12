@@ -38,3 +38,19 @@ func test_popup_and_burst_create_nodes():
 	var p := j.burst(host, Vector2(50, 50), Color.WHITE)
 	assert_eq(p.get_parent(), host)
 	assert_true(p.emitting)
+
+func test_leaving_tree_mid_hitstop_restores_time_scale():
+	var other := Juice.new()
+	add_child(other)
+	other.hitstop(10.0)
+	remove_child(other)
+	other.free()
+	assert_eq(Engine.time_scale, 1.0)
+
+func test_leaving_tree_idle_keeps_external_time_scale():
+	var other := Juice.new()
+	add_child(other)
+	Engine.time_scale = 0.5
+	remove_child(other)
+	other.free()
+	assert_eq(Engine.time_scale, 0.5)
