@@ -1,0 +1,14 @@
+[
+	{"id": "block", "name": "Your Block", "start_m": 0, "value": 1, "helpers_per_chunk": 1.2, "hazards_per_chunk": 0.6,
+	 "helpers": ["mailbox", "trash_can", "dog"], "hazards": ["puddle", "grass"],
+	 "palette": {"sky_top": "8fd3f4", "sky_bottom": "fbe3c4", "hills": "a8d5a2", "sidewalk": "d9d4cc", "road": "5d5f71", "lane": "e9e6ee",
+	             "houses": ["f7b267", "9ad1d4", "f4d35e", "f6bd60"], "roofs": ["e5676a", "4a6fa5", "ee964b", "84a59d"]}},
+	{"id": "downtown", "name": "Downtown", "start_m": 400, "value": 10, "helpers_per_chunk": 1.4, "hazards_per_chunk": 0.8,
+	 "helpers": ["car", "trash_can", "pigeon"], "hazards": ["storm_drain", "puddle"],
+	 "palette": {"sky_top": "a0c4e8", "sky_bottom": "f6d6c8", "hills": "9fb7c9", "sidewalk": "cfcac4", "road": "4f5163", "lane": "f4d35e",
+	             "houses": ["b8c0d8", "e0a96d", "9ab8a8", "d7b49e"], "roofs": ["5c6784", "8d5a4a", "4a6b5d", "6b4f63"]}},
+	{"id": "highway", "name": "Highway Shoulder", "start_m": 1200, "value": 100, "helpers_per_chunk": 1.0, "hazards_per_chunk": 1.0,
+	 "helpers": ["guardrail", "truck"], "hazards": ["gravel", "storm_drain"],
+	 "palette": {"sky_top": "f7c59f", "sky_bottom": "fde8c8", "hills": "c9b37e", "sidewalk": "b9b2a6", "road": "45474f", "lane": "ffffff",
+	             "houses": ["d9c7a0", "a7b59a", "c9a27e", "b8a48c"], "roofs": ["7a6a55", "5f6e52", "8a5f43", "6e604f"]}}
+]

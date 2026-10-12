@@ -15,6 +15,12 @@ const REQUIRED_STATS: Array[String] = [
 ]
 
 var tuning: Dictionary = {}
+var upgrades: Array = []
+var cans: Array = []
+var perks: Array = []
+var modifiers: Array = []
+var zones: Array = []
+var objects: Dictionary = {}
 
 
 static func read_json(path: String) -> Variant:
@@ -34,4 +40,31 @@ static func load_all(dir: String = DATA_DIR) -> GameData:
 	if t is Dictionary:
 		for k in t:
 			d.tuning[k] = float(t[k])
+	d.upgrades = _array(dir + "/upgrades.json")
+	d.cans = _array(dir + "/cans.json")
+	d.perks = _array(dir + "/perks.json")
+	d.modifiers = _array(dir + "/modifiers.json")
+	d.zones = _array(dir + "/zones.json")
+	var o = read_json(dir + "/objects.json")
+	d.objects = o if o is Dictionary else {}
 	return d
+
+
+static func _array(path: String) -> Array:
+	var a = read_json(path)
+	return a if a is Array else []
+
+
+func upgrade(id: String) -> Dictionary:
+	return _find(upgrades, id)
+
+
+func can(id: String) -> Dictionary:
+	return _find(cans, id)
+
+
+func _find(list: Array, id: String) -> Dictionary:
+	for x in list:
+		if x.id == id:
+			return x
+	return {}

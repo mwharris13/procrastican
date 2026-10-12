@@ -1,0 +1,9 @@
+[
+	{"id": "soda", "name": "Soda Can", "desc": "Balanced. Trusty.", "cost": 0, "effects": []},
+	{"id": "paint", "name": "Paint Can", "desc": "Heavy: keeps speed, bounces lower", "cost": 500,
+	 "effects": [{"stat": "air_drag", "op": "mul", "value": 0.6}, {"stat": "ground_friction", "op": "mul", "value": 0.7},
+	             {"stat": "restitution_good", "op": "mul", "value": 0.9}, {"stat": "restitution_perfect", "op": "mul", "value": 0.92}]},
+	{"id": "lucky", "name": "Lucky Can", "desc": "+50% coins, a bit less bounce", "cost": 5000,
+	 "effects": [{"stat": "coin_mult", "op": "mul", "value": 1.5}, {"stat": "restitution_good", "op": "mul", "value": 0.92},
+	             {"stat": "restitution_perfect", "op": "mul", "value": 0.95}]}
+]

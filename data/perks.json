@@ -1,0 +1,10 @@
+[
+	{"id": "bouncy_hood", "name": "Bouncy Neighborhood", "desc": "Helper bounces +40% speed", "rarity": "common", "effects": [{"stat": "helper_speed_mult", "op": "mul", "value": 1.4}]},
+	{"id": "long_legs", "name": "Long Legs", "desc": "Good window +25%", "rarity": "common", "effects": [{"stat": "good_window", "op": "mul", "value": 1.25}]},
+	{"id": "lucky_penny", "name": "Lucky Penny", "desc": "+25% coins this run", "rarity": "common", "effects": [{"stat": "coin_mult", "op": "mul", "value": 1.25}]},
+	{"id": "second_wind", "name": "Second Wind", "desc": "A steady tailwind", "rarity": "common", "effects": [{"stat": "tailwind", "op": "add", "value": 0.8}]},
+	{"id": "super_kick", "name": "Super Kick", "desc": "Every 5th Perfect is a Super Kick", "rarity": "rare", "effects": [{"stat": "super_kick_every", "op": "add", "value": 5.0}]},
+	{"id": "trampolines", "name": "Puddle Trampolines", "desc": "Puddles bounce you up", "rarity": "rare", "effects": [{"stat": "puddle_trampoline", "op": "add", "value": 1.0}]},
+	{"id": "spare_kick", "name": "Spare Kick", "desc": "+1 air kick this run", "rarity": "rare", "effects": [{"stat": "air_kicks", "op": "add", "value": 1.0}]},
+	{"id": "golden_touch", "name": "Golden Touch", "desc": "Perfect window +50%, coins +50%", "rarity": "epic", "effects": [{"stat": "perfect_window", "op": "mul", "value": 1.5}, {"stat": "coin_mult", "op": "mul", "value": 1.5}]}
+]
