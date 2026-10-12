@@ -194,12 +194,14 @@ func _react(ev: Dictionary) -> void:
 					juice.hitstop(0.06)
 					juice.shake(4.0)
 					juice.popup("SUPER!" if ev.super else "PERFECT!", at + Vector2(0, -22), UiTheme.GOLD, 18)
-					juice.burst(self, at, UiTheme.GOLD, 18)
+					juice.burst(self, at, "spark")
+					juice.burst(self, at, "coin", 6)
+					juice.flash(self, at, "fx", "perfect_burst", 3)
 				TapJudge.Grade.GOOD:
 					sfx.play("good")
 					juice.shake(2.0)
 					juice.popup("GOOD", at + Vector2(0, -20), Color.WHITE, 14)
-					juice.burst(self, at, Color.WHITE, 8)
+					juice.burst(self, at, "spark", 8)
 				_:
 					sfx.play("miss")
 					juice.popup("miss", at + Vector2(0, -18), Color("9a9aa8"), 12)
@@ -209,10 +211,11 @@ func _react(ev: Dictionary) -> void:
 			juice.popup("AIR!", at + Vector2(0, -20), Color.WHITE, 14)
 		"touchdown":
 			_squash = 1.0
-			juice.burst(self, world_to_screen(sim.can.pos), ZoneLook.color(zones, sim.can.pos.x, "sidewalk"), 5)
+			juice.burst(self, world_to_screen(sim.can.pos), "dust", 5)
 		"helper":
 			sfx.play("helper")
 			juice.shake(3.0)
+			juice.burst(self, at, "spark", 6)
 			juice.popup("BOING", at + Vector2(0, -20), Color.WHITE, 14)
 		"hazard":
 			sfx.play("helper" if ev.get("trampoline", false) else "hazard")

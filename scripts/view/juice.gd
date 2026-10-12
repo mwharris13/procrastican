@@ -10,6 +10,7 @@ var popup_layer: CanvasLayer
 var _hitstop_left := 0.0
 var _shake := 0.0
 var _last_usec := 0
+var _flashes: Array[FlashSprite] = []
 var _rng := RandomNumberGenerator.new()
 
 
@@ -38,6 +39,17 @@ func advance_real(sec: float) -> void:
 		_hitstop_left -= sec
 		if _hitstop_left <= 0.0:
 			end_hitstop()
+	# Advanced here on real time so flashes still play during hit-stop.
+	for f in _flashes.duplicate():
+		if not is_instance_valid(f):
+			_flashes.erase(f)
+			continue
+		f.elapsed += sec
+		if f.elapsed >= f.frames * f.frame_time:
+			_flashes.erase(f)
+			f.queue_free()
+		else:
+			f.queue_redraw()
 	_shake = maxf(0.0, _shake - sec * SHAKE_DECAY_PX_PER_S)
 	shake_offset = Vector2(_rng.randf_range(-_shake, _shake), _rng.randf_range(-_shake, _shake)).round()
 
@@ -75,7 +87,7 @@ func popup(text: String, screen_pos: Vector2, color: Color, size: int = 16) -> L
 	return l
 
 
-func burst(parent: Node, screen_pos: Vector2, color: Color, amount: int = 14) -> CPUParticles2D:
+func burst(parent: Node, screen_pos: Vector2, sprite: String, amount: int = 14) -> CPUParticles2D:
 	var p := CPUParticles2D.new()
 	p.one_shot = true
 	p.amount = amount
@@ -85,11 +97,40 @@ func burst(parent: Node, screen_pos: Vector2, color: Color, amount: int = 14) ->
 	p.initial_velocity_min = 40.0
 	p.initial_velocity_max = 110.0
 	p.gravity = Vector2(0, 260)
-	p.scale_amount_min = 1.5
-	p.scale_amount_max = 3.0
-	p.color = color
+	p.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var f := SpriteBank.frame("fx", sprite)
+	if not f.is_empty():
+		var at := AtlasTexture.new()
+		at.atlas = f.tex
+		at.region = f.region
+		p.texture = at
 	p.position = screen_pos
 	parent.add_child(p)
 	p.emitting = true
 	get_tree().create_timer(1.0, true, false, true).timeout.connect(p.queue_free)
 	return p
+
+
+func flash(parent: Node, screen_pos: Vector2, sheet: String, base_name: String, frames: int, frame_time: float = 0.05) -> Node2D:
+	var n := FlashSprite.new()
+	n.sheet = sheet
+	n.base_name = base_name
+	n.frames = frames
+	n.frame_time = frame_time
+	n.position = screen_pos
+	n.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	parent.add_child(n)
+	_flashes.append(n)
+	return n
+
+
+class FlashSprite extends Node2D:
+	var sheet := ""
+	var base_name := ""
+	var frames := 1
+	var frame_time := 0.05
+	var elapsed := 0.0
+
+	func _draw() -> void:
+		var i := mini(int(elapsed / frame_time), frames - 1)
+		SpriteBank.draw(self, sheet, "%s#%d" % [base_name, i], Vector2.ZERO)
