@@ -35,6 +35,7 @@ var _squash := 0.0
 var _since_launch := 0.0
 var _blink_in := 3.0
 var _blink_left := 0.0
+var _light_layer: LightLayer
 
 
 static func default_zones() -> Array:
@@ -47,6 +48,9 @@ func _ready() -> void:
 	ground_y = roundf(get_viewport_rect().size.y * 0.7)
 	if zones.is_empty():
 		zones = default_zones()
+	_light_layer = LightLayer.new()
+	_light_layer.view = self
+	add_child(_light_layer)
 
 
 func setup(p_juice: Juice, p_sfx: Sfx, p_probe: LatencyProbe) -> void:
@@ -231,6 +235,8 @@ func _draw() -> void:
 		_draw_can(Color.WHITE.lerp(tint, 0.5))
 	for i in _preview.size():
 		draw_circle(world_to_screen(_preview[i]), 1.5 if i % 2 == 0 else 1.0, Color(1, 1, 1, 0.9))
+	if _light_layer:
+		_light_layer.queue_redraw()
 
 
 func _look_x() -> float:
@@ -336,6 +342,33 @@ func _draw_buildings(size: Vector2) -> void:
 		if b.sheet == "block":
 			SpriteBank.draw(self, "block", "house_shadow", Vector2(cx - 68, base), Color(1, 1, 1, 0.28))
 		SpriteBank.draw(self, b.sheet, b.name, Vector2(cx, base))
+	for l in _lamps(size):
+		if l.sheet == "downtown":
+			SpriteBank.draw(self, "downtown", "streetlight", Vector2(l.x, base))
+
+
+## Lamps in view: {sheet, x (sprite anchor), pool (light pool center)}.
+func _lamps(size: Vector2) -> Array:
+	var out: Array = []
+	var base := _base_y()
+	var first := int(floor(cam_x / HOUSE_SPACING_M)) - 1
+	var last := int(ceil((cam_x + size.x / ppm) / HOUSE_SPACING_M)) + 1
+	for i in range(first, last + 1):
+		var wx := i * HOUSE_SPACING_M + 2.5
+		var b := ZoneLook.building(zones, i, wx)
+		if b.get("name", "") == "lamp_sodium":
+			var x := roundf((wx - cam_x) * ppm)
+			out.append({"sheet": "highway", "x": x, "pool": Vector2(x + 6, base + 4)})
+		# Streetlight at the slot edge between every other pair of storefronts.
+		var lx := wx + HOUSE_SPACING_M * 0.5
+		if i % 2 == 0 and ZoneLook.building(zones, i, lx).get("sheet", "") == "downtown":
+			var x := roundf((lx - cam_x) * ppm)
+			out.append({"sheet": "downtown", "x": x, "pool": Vector2(x + 9, base + 4)})
+	return out
+
+
+func lamp_pools(size: Vector2) -> Array:
+	return _lamps(size).map(func(l): return l.pool)
 
 
 func _draw_objects(size: Vector2, tint: Color) -> void:

@@ -38,3 +38,21 @@ func test_spin_frame_index():
 	var cases := [[0.0, 0], [11.24, 0], [11.26, 1], [359.0, 0], [-22.5, 15], [720.0, 0], [90.0, 4]]
 	for c in cases:
 		assert_eq(RunView.spin_frame(deg_to_rad(c[0])), c[1], "angle %s" % c[0])
+
+
+func test_every_building_name_exists_in_its_sheet():
+	for sheet in ZoneLook.BUILDINGS:
+		for n in ZoneLook.BUILDINGS[sheet]:
+			assert_true(SpriteBank.has(sheet, n), "%s/%s" % [sheet, n])
+
+
+func test_every_run_view_scenery_sprite_exists():
+	var refs := {
+		"block": ["sun_low", "cloud_a", "cloud_b", "hills_far", "hills_near", "house_shadow"],
+		"downtown": ["sun_dusk", "cloud_dusk", "skyline", "streetlight"],
+		"highway": ["city_far", "moon", "star_a", "star_b", "lamp_sodium"],
+		"fx": ["light_pool"],
+	}
+	for sheet in refs:
+		for n in refs[sheet]:
+			assert_true(SpriteBank.has(sheet, n), "%s/%s" % [sheet, n])
