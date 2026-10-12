@@ -106,6 +106,7 @@ func _resolve(grade: int) -> Dictionary:
 			# Never exceed the impact speed, so every kick still bleeds energy.
 			can.vel.x = minf(minf(can.vel.x * stats.super_kick_mult, can.last_impact_vel.x), stats.max_speed)
 			if not can.rolling:
+				# Bounded only while perfect_restitution^(every-1) * super_kick_mult < 1 (0.9^4*1.5 today).
 				can.vel.y *= stats.super_kick_mult
 			ev.super = true
 	return ev

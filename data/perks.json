@@ -1,5 +1,5 @@
 [
-	{"id": "bouncy_hood", "name": "Bouncy Neighborhood", "desc": "Helper bounces +40% speed", "rarity": "common", "effects": [{"stat": "helper_speed_mult", "op": "mul", "value": 1.1}]},
+	{"id": "bouncy_hood", "name": "Bouncy Neighborhood", "desc": "Helper bounces +10% speed", "rarity": "common", "effects": [{"stat": "helper_speed_mult", "op": "mul", "value": 1.1}]},
 	{"id": "long_legs", "name": "Long Legs", "desc": "Good window +25%", "rarity": "common", "effects": [{"stat": "good_window", "op": "mul", "value": 1.25}]},
 	{"id": "lucky_penny", "name": "Lucky Penny", "desc": "+25% coins this run", "rarity": "common", "effects": [{"stat": "coin_mult", "op": "mul", "value": 1.25}]},
 	{"id": "second_wind", "name": "Second Wind", "desc": "A steady tailwind", "rarity": "common", "effects": [{"stat": "tailwind", "op": "add", "value": 0.4}]},

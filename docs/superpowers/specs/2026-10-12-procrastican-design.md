@@ -80,7 +80,7 @@ coin value. The can's physics stay in a sane range; exponential growth comes fro
 | Zone | Starts at | Value | Flavor |
 |---|---|---|---|
 | Your Block | 0 m | ×1 | Houses, mailboxes, sleeping dog |
-| Downtown | ~400 m | ×10 | Parked cars, storm drains, pigeons |
+| Downtown | ~250 m | ×10 | Parked cars, storm drains, pigeons |
 | Highway Shoulder | ~1,200 m | ×100 | Guardrails, truck draft boost, gravel |
 
 Zone thresholds and values are data and will be tuned.
