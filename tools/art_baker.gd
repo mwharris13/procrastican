@@ -4,7 +4,7 @@ extends RefCounted
 
 const GUTTER := 1
 const MIN_SHEET_WIDTH := 256
-const ANCHORS := ["bottom-center", "center", "top-left"]
+const ANCHORS := ["bottom-center", "bottom-left", "center", "top-left"]
 
 var errors := PackedStringArray()
 var _groups := {}
@@ -165,6 +165,8 @@ func _pack(frames: Array) -> Dictionary:
 			a = Vector2i(fw / 2, fh / 2)
 		elif fr.anchor == "top-left":
 			a = Vector2i.ZERO
+		elif fr.anchor == "bottom-left":
+			a = Vector2i(0, fh)
 		regions[fr.name] = {"x": p[1], "y": p[2], "w": fw, "h": fh, "ax": a.x, "ay": a.y}
 	return {"image": sheet, "regions": regions}
 

@@ -148,7 +148,8 @@ func start_run() -> void:
 	_resolve_stats()
 	run_state = RunState.new(stats, data.zones)
 	var street := StreetGen.new(_rng.randi(), data.zones, data.objects, stats.helper_freq)
-	run_view.set_palette(data.zones[0].palette)
+	run_view.set_zones(data.zones)
+	run_view.can_sprite = save.equipped_can
 	run_view.start_aim(stats, street)
 	hud.set_distance(0.0)
 	hud.set_combo(0)
@@ -177,7 +178,6 @@ func _on_progressed(x: float) -> void:
 	for ev in run_state.on_distance(x):
 		if ev.type == "zone":
 			var z: Dictionary = data.zones[ev.index]
-			run_view.set_palette(z.palette)
 			juice.popup("%s  x%s" % [z.name, NumFmt.format(float(z.value))], Vector2(135, 160), UiTheme.GOLD, 16)
 			sfx.play("coin")
 		elif ev.type == "perk_due":

@@ -40,13 +40,15 @@ func test_upgrades_well_formed():
 
 func test_zones_sorted_and_reference_real_objects():
 	assert_eq(float(d.zones[0].start_m), 0.0)
-	var keys := RunView.default_palette().keys()
+	var keys := ZoneLook.PALETTE_KEYS
 	for i in d.zones.size():
 		var z: Dictionary = d.zones[i]
 		if i > 0:
 			assert_gt(float(z.start_m), float(d.zones[i - 1].start_m))
 		for k in keys:
 			assert_true(z.palette.has(k), z.id + " palette " + k)
+		assert_eq(z.palette.sky.size(), ZoneLook.SKY_STOPS, z.id + " sky stops")
+		assert_true(ZoneLook.BUILDINGS.has(z.palette.sheet), z.id + " sheet")
 		for h in z.helpers:
 			assert_eq(d.objects[h].kind, "helper", h)
 		for h in z.hazards:
