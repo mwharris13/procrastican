@@ -229,3 +229,17 @@ func test_rolling_can_catches_narrow_hazard_in_small_steps():
 	var s := _rolling_sim()
 	var hz := _until_type(s, "hazard").filter(func(e): return e.type == "hazard")
 	assert_eq(hz.size(), 1)
+
+func test_super_kick_all_perfect_chain_still_comes_to_rest():
+	stats.super_kick_every = 5.0
+	var s := _sim()
+	var reason := ""
+	for i in int(120.0 / STEP):
+		if s.ended:
+			break
+		if s.can.time_to_touchdown() <= 0.02:
+			s.tap(s.can_center())
+		for ev in s.advance(STEP):
+			if ev.type == "run_end":
+				reason = ev.reason
+	assert_eq(reason, "rest")

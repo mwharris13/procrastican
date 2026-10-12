@@ -103,7 +103,10 @@ func _resolve(grade: int) -> Dictionary:
 		perfect_count += 1
 		var every := int(stats.super_kick_every)
 		if every > 0 and perfect_count % every == 0:
-			can.vel.x = minf(can.vel.x * stats.super_kick_mult, stats.max_speed)
+			# Never exceed the impact speed, so every kick still bleeds energy.
+			can.vel.x = minf(minf(can.vel.x * stats.super_kick_mult, can.last_impact_vel.x), stats.max_speed)
+			if not can.rolling:
+				can.vel.y *= stats.super_kick_mult
 			ev.super = true
 	return ev
 
