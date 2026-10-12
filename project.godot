@@ -6,6 +6,12 @@ config/name="Procrastican"
 run/main_scene="res://scenes/main.tscn"
 run/max_fps=60
 config/features=PackedStringArray("4.7")
+config/icon="res://assets/app/icon_512.png"
+boot_splash/bg_color=Color(0.1843, 0.2275, 0.4196, 1)
+boot_splash/show_image=true
+boot_splash/image="res://assets/app/splash.png"
+boot_splash/fullsize=false
+boot_splash/use_filter=false
 
 [display]
 

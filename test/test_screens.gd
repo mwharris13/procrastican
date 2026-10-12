@@ -103,3 +103,7 @@ func test_bad_import_leaves_save_untouched():
 	assert_false(s.try_import())
 	assert_signal_not_emitted(s, "imported")
 	assert_string_contains(s.status.text, "isn't a valid")
+
+func test_logo_and_icon_sprites_exist():
+	assert_true(SpriteBank.has("ui", "logo"))
+	assert_true(SpriteBank.has("app", "icon"))

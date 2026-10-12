@@ -30,24 +30,15 @@ func _init() -> void:
 	add_button("Settings", func(): settings.emit(), "small")
 
 
-# 16 px, two lines at x2: the 12-letter word is too wide on one line at that scale.
 func _add_logo() -> void:
-	var holder := Control.new()
-	holder.custom_minimum_size = Vector2(7 * 16 * 2, 35 * 2)
-	holder.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_child(holder)
-	var l := Label.new()
-	l.text = "PROCRAS\nTICAN"
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.size = Vector2(7 * 16, 35)
-	l.scale = Vector2(2, 2)
-	UiTheme.outlined(l, UiTheme.BIG, UiTheme.GOLD)
-	l.add_theme_constant_override("outline_size", 2)
-	l.add_theme_constant_override("line_spacing", 3)
-	l.add_theme_color_override("font_shadow_color", UiTheme.INK_DEEP)
-	l.add_theme_constant_override("shadow_offset_y", 3)
-	holder.add_child(l)
+	var tex := UiTheme.atlas("ui", "logo")
+	var rect := TextureRect.new()
+	rect.texture = tex
+	rect.stretch_mode = TextureRect.STRETCH_KEEP
+	rect.custom_minimum_size = tex.get_size() if tex else Vector2(235, 30)
+	rect.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(rect)
 
 
 func set_coins(c: float) -> void:
