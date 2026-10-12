@@ -111,7 +111,7 @@ const TRAMPOLINE_VY := 10.0
 
 func apply_helper(def: Dictionary, helper_speed_mult: float) -> void:
 	vel.y = maxf(vel.y, float(def.bounce_vy))
-	vel.x = minf(vel.x * float(def.speed_mult) * helper_speed_mult, stats.max_speed)
+	vel.x = minf(vel.x * float(def.speed_mult) * helper_speed_mult, minf(maxf(vel.x, stats.launch_speed_max), stats.max_speed))
 	rolling = false
 	at_rest = false
 

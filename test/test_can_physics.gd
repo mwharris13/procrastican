@@ -128,3 +128,15 @@ func test_air_kick_adds_forward_speed():
 	var vx := c.vel.x
 	c.air_kick(4.0)
 	assert_almost_eq(c.vel.x, vx + 4.0, 0.001)
+
+func test_helper_speed_gain_capped_at_kick_speed():
+	var def := {"bounce_vy": 8.0, "speed_mult": 1.2}
+	var fast := CanPhysics.new(stats)
+	fast.vel = Vector2(stats.launch_speed_max + 5.0, 3.0)
+	fast.apply_helper(def, 1.0)
+	assert_almost_eq(fast.vel.x, stats.launch_speed_max + 5.0, 0.001)
+	assert_almost_eq(fast.vel.y, 8.0, 0.001)
+	var slow := CanPhysics.new(stats)
+	slow.vel = Vector2(10.0, 3.0)
+	slow.apply_helper(def, 1.0)
+	assert_almost_eq(slow.vel.x, 12.0, 0.001)
