@@ -56,3 +56,31 @@ func test_tap_far_from_can_is_ignored():
 	view.update_drag(Vector2(40, 360))
 	view.end_drag()
 	assert_eq(view.tap_screen(Vector2(269, 584)), {})
+
+func test_cancel_drag_resets_aim_without_launching():
+	view.begin_drag(Vector2(100, 300))
+	view.update_drag(Vector2(40, 360))
+	view.cancel_drag()
+	assert_eq(view.state, "aiming")
+	assert_false(view.sim.can.launched)
+	view.end_drag()
+	assert_eq(view.state, "aiming")
+
+func test_canceled_touch_does_not_launch():
+	var down := InputEventScreenTouch.new()
+	down.index = 0
+	down.pressed = true
+	down.position = Vector2(100, 300)
+	view._unhandled_input(down)
+	var drag := InputEventScreenDrag.new()
+	drag.index = 0
+	drag.position = Vector2(40, 360)
+	view._unhandled_input(drag)
+	var cancel := InputEventScreenTouch.new()
+	cancel.index = 0
+	cancel.pressed = false
+	cancel.canceled = true
+	cancel.position = Vector2(40, 360)
+	view._unhandled_input(cancel)
+	assert_eq(view.state, "aiming")
+	assert_false(view.sim.can.launched)

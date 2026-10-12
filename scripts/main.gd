@@ -1,6 +1,9 @@
 extends Node2D
 ## M0 loop: aim → run → tap to kick again. Task 20 replaces this with the full game flow.
 
+# Real-time lockout so rapid tapping at run end doesn't skip the result message.
+const RESTART_LOCKOUT_MS := 400
+
 var data: GameData
 var stats: Dictionary
 var juice: Juice
@@ -11,6 +14,7 @@ var hud: Hud
 var overlay: TuningOverlay
 var combo := 0
 var _waiting_restart := false
+var _run_ended_ms := 0
 
 
 func _ready() -> void:
@@ -57,9 +61,11 @@ func _on_sim_event(ev: Dictionary) -> void:
 func _on_run_ended(ev: Dictionary) -> void:
 	hud.show_message("%.1f m. Tap to kick again" % ev.x)
 	_waiting_restart = true
+	_run_ended_ms = Time.get_ticks_msec()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _waiting_restart and event is InputEventScreenTouch and event.pressed:
+	if _waiting_restart and event is InputEventScreenTouch and event.pressed \
+			and Time.get_ticks_msec() - _run_ended_ms >= RESTART_LOCKOUT_MS:
 		_waiting_restart = false
 		_new_run()

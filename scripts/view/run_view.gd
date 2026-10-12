@@ -87,7 +87,11 @@ func _unhandled_input(event: InputEvent) -> void:
 				_drag_index = event.index
 				begin_drag(event.position)
 			elif not event.pressed and event.index == _drag_index:
-				end_drag()
+				# iOS touchcancel arrives as a release; it must not kick.
+				if event.canceled:
+					cancel_drag()
+				else:
+					end_drag()
 			get_viewport().set_input_as_handled()
 		elif state == "flying" and event.pressed:
 			tap_screen(event.position)
@@ -105,6 +109,13 @@ func begin_drag(pos: Vector2) -> void:
 func update_drag(pos: Vector2) -> void:
 	_aim = LaunchAim.from_drag(pos - _drag_start, stats)
 	_preview = LaunchAim.preview(_aim.angle, _aim.power, stats) if _aim.valid else PackedVector2Array()
+	queue_redraw()
+
+
+func cancel_drag() -> void:
+	_drag_index = -1
+	_aim = {"valid": false}
+	_preview = PackedVector2Array()
 	queue_redraw()
 
 
