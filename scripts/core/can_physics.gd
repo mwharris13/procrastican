@@ -97,3 +97,24 @@ func time_to_touchdown() -> float:
 		return INF
 	var g: float = stats.gravity
 	return (vel.y + sqrt(vel.y * vel.y + 2.0 * g * maxf(pos.y, 0.0))) / g
+
+
+const TRAMPOLINE_VY := 10.0
+
+
+func apply_helper(def: Dictionary, helper_speed_mult: float) -> void:
+	vel.y = maxf(vel.y, float(def.bounce_vy))
+	vel.x = minf(vel.x * float(def.speed_mult) * helper_speed_mult, stats.max_speed)
+	rolling = false
+	at_rest = false
+
+
+func apply_hazard(id: String, def: Dictionary) -> void:
+	if id == "puddle" and stats.puddle_trampoline >= 1.0:
+		vel.y = maxf(vel.y, TRAMPOLINE_VY)
+		rolling = false
+		at_rest = false
+		return
+	var keep := float(def.speed_keep)
+	vel *= keep
+	last_impact_vel *= keep

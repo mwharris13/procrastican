@@ -153,3 +153,58 @@ func test_long_advance_emits_miss_before_next_touchdown():
 	assert_eq(types[0], "graded")
 	assert_eq(ev[0].grade, TapJudge.Grade.MISS)
 	assert_eq(_graded(ev.slice(0, td)).size(), 1)
+
+class FakeStreet:
+	var objects := {}
+	var placed: Array = []
+	func objects_between(x0: float, x1: float) -> Array:
+		return placed.filter(func(o): return o.x > x0 and o.x <= x1)
+
+func _street(id: String, def: Dictionary, x: float) -> FakeStreet:
+	var f := FakeStreet.new()
+	f.objects[id] = def
+	f.placed = [{"id": id, "x": x}]
+	return f
+
+func test_low_can_hits_helper_and_bounces():
+	var s := RunSim.new(stats)
+	s.street = _street("trash_can", {"kind": "helper", "height": 50.0, "bounce_vy": 9.0, "speed_mult": 1.2, "combo": 1}, 3.0)
+	s.launch(20.0, 1.0)
+	var ev := _until_type(s, "helper")
+	assert_eq(ev[-1].id, "trash_can")
+	assert_eq(ev[-1].combo, 1)
+	assert_gte(s.can.vel.y, 9.0)
+
+func test_high_can_flies_over_helper():
+	var s := RunSim.new(stats)
+	s.street = _street("dog", {"kind": "helper", "height": 0.01, "bounce_vy": 9.0, "speed_mult": 1.2, "combo": 1}, 6.0)
+	s.launch(60.0, 1.0)
+	var ev := s.advance(0.6)
+	assert_false(ev.any(func(e): return e.type == "helper"))
+
+func test_touchdown_in_puddle_slows_can():
+	var s := RunSim.new(stats)
+	s.launch(45.0, 1.0)
+	var c := CanPhysics.new(stats)
+	c.launch(45.0, 1.0)
+	var land := {}
+	for i in 2000:
+		var e: Array = []
+		c.step(1.0 / 240.0, e)
+		if not e.is_empty():
+			land = e[0]
+			break
+	s.street = _street("puddle", {"kind": "hazard", "width": 4.0, "speed_keep": 0.5}, land.x - 2.0)
+	var ev := _until_type(s, "hazard").filter(func(e): return e.type == "hazard")
+	assert_eq(ev[-1].id, "puddle")
+	assert_false(ev[-1].trampoline)
+	assert_almost_eq(s.can.last_impact_vel.x, c.last_impact_vel.x * 0.5, 0.2)
+
+func test_trampoline_puddle_bounces_up():
+	stats.puddle_trampoline = 1.0
+	var s := RunSim.new(stats)
+	s.launch(10.0, 0.3)
+	s.street = _street("puddle", {"kind": "hazard", "width": 50.0, "speed_keep": 0.5}, 0.0)
+	var ev := _until_type(s, "hazard").filter(func(e): return e.type == "hazard")
+	assert_true(ev[-1].trampoline)
+	assert_gt(s.can.vel.y, 0.0)

@@ -271,9 +271,22 @@ func _draw_street(size: Vector2) -> void:
 		wx += dash
 
 
-## Street objects arrive in Task 17.
-func _draw_objects(_size: Vector2) -> void:
-	pass
+func _draw_objects(size: Vector2) -> void:
+	if sim == null or sim.street == null:
+		return
+	var x0 := cam_x - 6.0
+	var x1 := cam_x + size.x / ppm + 2.0
+	for o in sim.street.objects_between(x0, x1):
+		var def: Dictionary = sim.street.objects[o.id]
+		var col := Color(def.get("color", "ffffff"))
+		var p := world_to_screen(Vector2(o.x, 0.0))
+		if def.kind == "helper":
+			var h := float(def.height) * ppm
+			var w := maxf(6.0, h * 0.7)
+			draw_rect(Rect2(p.x - w / 2, p.y - h, w, h), col)
+			draw_rect(Rect2(p.x - w / 2, p.y - h, w, 2), col.lightened(0.3))
+		else:
+			draw_rect(Rect2(p.x, p.y - 1, float(def.width) * ppm, 3), col)
 
 
 func _draw_kid() -> void:

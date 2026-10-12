@@ -3,6 +3,7 @@ extends RefCounted
 ## One run: can physics plus tap timing, air kicks, street objects and a stuck-run watchdog.
 
 const STALL_SECONDS := 5.0
+const MAX_HAZARD_W := 6.0
 
 var stats: Dictionary
 var can: CanPhysics
@@ -13,6 +14,7 @@ var perfect_count := 0
 var _buffered_tap_t := NAN
 var _late_open := false
 var _since_touchdown := 0.0
+var _used := {}
 var _stall_x := 0.0
 var _stall_t := 0.0
 
@@ -106,9 +108,35 @@ func _resolve(grade: int) -> Dictionary:
 	return ev
 
 
-## Street objects arrive in Task 17.
-func _check_street(_prev: Vector2, _chunk: Array, _events: Array) -> void:
-	pass
+func _check_street(prev: Vector2, chunk: Array, events: Array) -> void:
+	if street == null:
+		return
+	var now := can.pos
+	for obj in street.objects_between(prev.x, now.x):
+		var def: Dictionary = street.objects[obj.id]
+		if def.kind != "helper" or _used.has(obj.x):
+			continue
+		var t: float = 0.0 if is_equal_approx(now.x, prev.x) else (obj.x - prev.x) / (now.x - prev.x)
+		if lerpf(prev.y, now.y, t) <= float(def.height):
+			_used[obj.x] = true
+			can.apply_helper(def, stats.helper_speed_mult)
+			events.append({"type": "helper", "id": obj.id, "x": obj.x, "combo": int(def.get("combo", 0))})
+	var probe_x := NAN
+	for ev in chunk:
+		if ev.type == "touchdown":
+			probe_x = ev.x
+	if is_nan(probe_x) and can.rolling:
+		probe_x = now.x
+	if is_nan(probe_x):
+		return
+	for obj in street.objects_between(probe_x - MAX_HAZARD_W, probe_x):
+		var def: Dictionary = street.objects[obj.id]
+		if def.kind != "hazard" or _used.has(obj.x) or probe_x > obj.x + float(def.width):
+			continue
+		_used[obj.x] = true
+		var tramp: bool = obj.id == "puddle" and stats.puddle_trampoline >= 1.0
+		can.apply_hazard(obj.id, def)
+		events.append({"type": "hazard", "id": obj.id, "x": obj.x, "trampoline": tramp})
 
 
 func _watchdog(used: float, events: Array) -> void:
