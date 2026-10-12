@@ -8,6 +8,7 @@ var sfx: Sfx
 var probe := LatencyProbe.new()
 var run_view: RunView
 var hud: Hud
+var overlay: TuningOverlay
 var combo := 0
 var _waiting_restart := false
 
@@ -27,6 +28,9 @@ func _ready() -> void:
 	run_view.sim_event.connect(_on_sim_event)
 	run_view.progressed.connect(hud.set_distance)
 	run_view.run_ended.connect(_on_run_ended)
+	overlay = TuningOverlay.new()
+	overlay.setup(stats, probe)
+	add_child(overlay)
 	_new_run()
 
 
