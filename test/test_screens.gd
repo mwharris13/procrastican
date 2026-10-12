@@ -17,6 +17,7 @@ func test_perk_pick_offers_and_emits_choice():
 	watch_signals(p)
 	var perks := GameData.load_all().perks.slice(0, 3)
 	p.show_perks(perks)
+	p._shown_ms -= 1000
 	assert_eq(p.buttons.size(), 3)
 	assert_string_contains(p.buttons[1].text, perks[1].name)
 	p.buttons[1].pressed.emit()
@@ -28,6 +29,14 @@ func test_results_show_numbers():
 	assert_string_contains(r.summary.text, "512.3")
 	assert_string_contains(r.summary.text, "3.2M")
 	assert_string_contains(r.summary.text, "NEW RECORD")
+
+func test_perk_pick_ignores_press_until_armed():
+	var p := PerkPickScreen.new()
+	add_child_autofree(p)
+	p.show_perks(GameData.load_all().perks.slice(0, 3))
+	watch_signals(p)
+	p.buttons[0].pressed.emit()
+	assert_signal_not_emitted(p, "picked")
 
 func test_results_ignore_presses_until_armed():
 	var r: ResultsScreen = _add(ResultsScreen.new())

@@ -49,6 +49,7 @@ func test_run_end_pays_out_saves_and_shows_results():
 func test_perk_checkpoint_pauses_and_pick_applies():
 	main.start_run()
 	main._on_progressed(RunState.PERK_FIRST_M + 1.0)
+	main.perk_pick._shown_ms -= 1000
 	assert_eq(main.screen, Main.Screen.PERK)
 	assert_true(get_tree().paused)
 	main.perk_pick.buttons[0].pressed.emit()
@@ -60,15 +61,41 @@ func test_spare_kick_perk_adds_air_kick_mid_run():
 	main.start_run()
 	var before: int = main.run_view.sim.air_kicks_left
 	main._on_progressed(RunState.PERK_FIRST_M + 1.0)
+	main.perk_pick._shown_ms -= 1000
 	main.perk_pick.picked.emit(_spare_kick())
 	assert_eq(main.run_view.sim.air_kicks_left, before + 1)
 
 func test_double_pick_applies_only_one_perk():
 	main.start_run()
 	main._on_progressed(RunState.PERK_FIRST_M + 1.0)
+	main.perk_pick._shown_ms -= 1000
 	main.perk_pick.picked.emit(_spare_kick())
 	main.perk_pick.picked.emit(_spare_kick())
 	assert_eq(main.run_perks.size(), 1)
+
+func test_progress_after_run_end_is_ignored():
+	main.start_run()
+	_launch_and_finish()
+	main._on_progressed(RunState.PERK_FIRST_M + 1.0)
+	assert_eq(main.screen, Main.Screen.RESULTS)
+	assert_false(get_tree().paused)
+
+func test_background_pause_cancels_aim():
+	main.start_run()
+	var down := InputEventScreenTouch.new()
+	down.index = 0
+	down.pressed = true
+	down.position = Vector2(100, 300)
+	main.run_view._unhandled_input(down)
+	main.run_view.update_drag(Vector2(40, 360))
+	main.background_pause()
+	main.resume()
+	var up := InputEventScreenTouch.new()
+	up.index = 0
+	up.pressed = false
+	up.position = Vector2(40, 360)
+	main.run_view._unhandled_input(up)
+	assert_eq(main.run_view.state, "aiming")
 
 func test_overlay_toggle_gates_run_input():
 	main.start_run()

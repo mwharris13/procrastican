@@ -170,6 +170,9 @@ func _on_sim_event(ev: Dictionary) -> void:
 
 
 func _on_progressed(x: float) -> void:
+	# RunView emits progressed after run_ended in the same tick.
+	if screen != Screen.RUN and screen != Screen.PERK:
+		return
 	hud.set_distance(x)
 	for ev in run_state.on_distance(x):
 		if ev.type == "zone":
@@ -230,14 +233,17 @@ func _on_run_ended(_ev: Dictionary) -> void:
 
 func _on_imported(d: Dictionary) -> void:
 	save = d
-	_persist()
+	var ok := _persist()
 	show_title()
-	toast("Save imported")
+	if ok:
+		toast("Save imported")
 
 
-func _persist() -> void:
-	if not SaveStore.save_to(save, save_path):
+func _persist() -> bool:
+	var ok := SaveStore.save_to(save, save_path)
+	if not ok:
 		toast("Couldn't save progress")
+	return ok
 
 
 func toast(text: String) -> void:
@@ -259,6 +265,7 @@ func background_pause() -> void:
 	if juice:
 		juice.end_hitstop()
 	if screen == Screen.RUN and not _bg_paused:
+		run_view.cancel_drag()
 		_bg_paused = true
 		get_tree().paused = true
 		pause_label.visible = true
