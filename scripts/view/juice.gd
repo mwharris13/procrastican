@@ -4,6 +4,7 @@ extends Node
 
 const HITSTOP_SCALE := 0.05
 const SHAKE_DECAY_PX_PER_S := 40.0
+const POPUP_WIDTH := 270
 
 var shake_offset := Vector2.ZERO
 var popup_layer: CanvasLayer
@@ -68,18 +69,16 @@ func shake(px: float) -> void:
 	_shake = maxf(_shake, px)
 
 
-func popup(text: String, screen_pos: Vector2, color: Color, size: int = 16) -> Label:
+func popup(text: String, screen_pos: Vector2, color: Color) -> Label:
 	var l := Label.new()
 	l.text = text
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.custom_minimum_size = Vector2(120, 0)
-	l.add_theme_font_size_override("font_size", size)
-	l.add_theme_color_override("font_color", color)
-	l.add_theme_color_override("font_outline_color", Color("2f3245"))
-	l.add_theme_constant_override("outline_size", 4)
+	l.custom_minimum_size = Vector2(POPUP_WIDTH, 0)
+	l.add_theme_font_override("font", UiTheme.font())
+	UiTheme.outlined(l, UiTheme.BIG, color)
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	popup_layer.add_child(l)
-	l.position = screen_pos - Vector2(60, size)
+	l.position = screen_pos - Vector2(POPUP_WIDTH / 2.0, UiTheme.BIG)
 	var tw := l.create_tween().set_ignore_time_scale(true)
 	tw.tween_property(l, "position:y", l.position.y - 24.0, 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_property(l, "modulate:a", 0.0, 0.3).set_delay(0.2)
